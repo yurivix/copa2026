@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolão Copa 2026</title>
+<style>
+  :root{
+    --bg:#0b1020; --card:#141b33; --card2:#1b2444; --line:#26315a;
+    --txt:#eef2ff; --muted:#9aa6c8; --accent:#ffd54a; --green:#2fbf71;
+    --yellow:#e7b416; --red:#3a4366; --blue:#3b82f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#0b1020,#0e1429);color:var(--txt);min-height:100vh}
+  header{padding:18px 16px;text-align:center;background:linear-gradient(135deg,#16204a,#0e1530);
+    border-bottom:2px solid var(--accent)}
+  header h1{margin:0;font-size:22px;letter-spacing:.5px}
+  header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .wrap{max-width:1100px;margin:0 auto;padding:14px}
+  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+  .tab{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:9px 16px;
+    border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+  .tab.active{background:var(--accent);color:#10162e;border-color:var(--accent)}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px}
+  .btn{background:var(--blue);color:#fff;border:none;padding:10px 16px;border-radius:10px;
+    cursor:pointer;font-size:14px;font-weight:600}
+  .btn.alt{background:var(--card2);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:wait}
+  select{background:var(--card);color:var(--txt);border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:14px}
+  .status{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 14px}
+  /* Ranking */
+  .rank{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .rrow{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;
+    padding:12px 14px;border-bottom:1px solid var(--line)}
+  .rrow:last-child{border-bottom:none}
+  .pos{font-size:20px;font-weight:800;text-align:center;color:var(--muted)}
+  .pos.p1{color:#ffd700}.pos.p2{color:#c0c8e0}.pos.p3{color:#cd7f32}
+  .pname{font-weight:700;font-size:16px}
+  .pmeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .pts{font-size:22px;font-weight:800;color:var(--accent);text-align:right;min-width:60px}
+  .pts span{font-size:12px;color:var(--muted);font-weight:600;display:block}
+  /* Games */
+  .game{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .ghead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);
+    font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
+  .gtag{background:#0e1530;border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .gmain{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;flex-wrap:wrap}
+  .team{font-weight:700;font-size:16px;min-width:120px}
+  .team.a{text-align:right}.team.b{text-align:left}
+  .score{display:flex;align-items:center;gap:6px}
+  .score input{width:46px;height:42px;text-align:center;font-size:20px;font-weight:800;
+    background:#0e1530;border:2px solid var(--line);border-radius:8px;color:var(--txt)}
+  .score input:focus{border-color:var(--accent);outline:none}
+  .vs{color:var(--muted);font-weight:700}
+  .picks{padding:0 14px 14px}
+  .picks h4{margin:6px 0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .pchip{display:flex;justify-content:space-between;align-items:center;background:#0e1530;
+    border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
+  .pchip .nm{color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pchip .sc{font-weight:800;margin-left:8px;white-space:nowrap}
+  .pchip.g10{border-color:var(--green);background:rgba(47,191,113,.14)}
+  .pchip.g10 .sc{color:var(--green)}
+  .pchip.g5{border-color:var(--yellow);background:rgba(231,180,22,.12)}
+  .pchip.g5 .sc{color:var(--yellow)}
+  .pchip.g0{opacity:.65}
+  .badge{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;font-weight:700}
+  .empty{color:var(--muted);font-size:13px;padding:8px 0}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
+  .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  @media(max-width:520px){.team{min-width:90px;font-size:14px}.rrow{grid-template-columns:38px 1fr auto}}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚽ Bolão Copa do Mundo 2026</h1>
+  <p>Placar exato = <b>10 pts</b> · Acertou o vencedor/empate = <b>5 pts</b></p>
+</header>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab active" data-view="rank">🏆 Classificação</div>
+    <div class="tab" data-view="games">📋 Jogos &amp; Palpites</div>
+  </div>
+
+  <div class="bar">
+    <button class="btn" id="fetchBtn">🔄 Atualizar resultados</button>
+    <select id="filterGroup"><option value="">Todos os grupos</option></select>
+    <select id="filterState">
+      <option value="all">Todos os jogos</option>
+      <option value="played">Só já jogados</option>
+      <option value="pending">Só pendentes</option>
+    </select>
+    <button class="btn alt" id="clearBtn" title="Apagar resultados digitados/buscados">🗑️ Limpar</button>
+  </div>
+  <div class="status" id="status">Pronto. Clique em "Atualizar resultados" quando os jogos começarem.</div>
+
+  <div id="viewRank">
+    <div class="legend">
+      <span><span class="dot" style="background:var(--green)"></span>Placar exato (10)</span>
+      <span><span class="dot" style="background:var(--yellow)"></span>Acertou o resultado (5)</span>
+    </div>
+    <div class="rank" id="rankList"></div>
+  </div>
+
+  <div id="viewGames" style="display:none">
+    <div id="gamesList"></div>
+  </div>
+</div>
+
+<footer>
+  Resultados via TheSportsDB · Os placares ficam salvos neste navegador.<br>
+  Você também pode digitar o placar manualmente em qualquer jogo.
+</footer>
+
+<script src="data.js"></script>
+<script>
+const D = window.BOLAO;
+const LS_KEY = 'bolao_copa_2026_results';
+let results = loadResults();
+let view = 'rank';
+
+function loadResults(){
+  try{ const r = JSON.parse(localStorage.getItem(LS_KEY)); if(Array.isArray(r)&&r.length===D.games.length) return r; }catch(e){}
+  return D.games.map(()=>[null,null]);
+}
+function saveResults(){ localStorage.setItem(LS_KEY, JSON.stringify(results)); }
+
+function scoreFor(real, pick){
+  const ra=real[0], rb=real[1], pa=pick[0], pb=pick[1];
+  if(ra==null||rb==null||pa==null||pb==null||pa===''||pb==='') return null;
+  if(Number(pa)===Number(ra)&&Number(pb)===Number(rb)) return 10;
+  const s=(x,y)=>Math.sign(Number(x)-Number(y));
+  if(s(ra,rb)===s(pa,pb)) return 5;
+  return 0;
+}
+
+function computeStandings(){
+  return D.participants.map(p=>{
+    let total=0,exatos=0,acertos=0,jogados=0;
+    D.games.forEach((g,i)=>{
+      const sc=scoreFor(results[i], p.picks[i]);
+      if(sc!=null){jogados++; total+=sc; if(sc===10)exatos++; else if(sc===5)acertos++;}
+    });
+    return {nick:p.name,label:p.label,total,exatos,acertos,jogados};
+  }).sort((a,b)=> b.total-a.total || b.exatos-a.exatos || a.nick.localeCompare(b.nick));
+}
+
+function renderRank(){
+  const st=computeStandings();
+  document.getElementById('rankList').innerHTML = st.map((s,i)=>{
+    const pos=i+1;
+    const champ = s.label.split('-').slice(1).join(' · ');
+    return `<div class="rrow">
+      <div class="pos p${pos}">${pos}º</div>
+      <div><div class="pname">${s.nick}</div>
+        <div class="pmeta">${s.exatos} cravadas · ${s.acertos} no resultado · ${s.jogados} jogos · 🏆 ${champ||'-'}</div></div>
+      <div class="pts">${s.total}<span>pontos</span></div>
+    </div>`;
+  }).join('');
+}
+
+function gameState(i){ const r=results[i]; return (r[0]!=null&&r[1]!=null)?'played':'pending'; }
+
+function renderGames(){
+  const grp=document.getElementById('filterGroup').value;
+  const stt=document.getElementById('filterState').value;
+  let html='';
+  D.games.forEach((g,i)=>{
+    if(grp && g.grupo!==grp) return;
+    const state=gameState(i);
+    if(stt==='played'&&state!=='played') return;
+    if(stt==='pending'&&state!=='pending') return;
+    const dt=new Date(g.data);
+    const dstr=dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const r=results[i];
+    const picksHtml = D.participants.map(p=>{
+      const pk=p.picks[i];
+      if(pk[0]==null||pk[1]==null) return '';
+      const sc=scoreFor(r,pk);
+      const cls = sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
+      const tag = sc!=null?`<span class="badge" style="background:${sc===10?'#2fbf71':sc===5?'#e7b416':'#3a4366'};color:${sc===5?'#10162e':'#fff'}">+${sc}</span>`:'';
+      return `<div class="pchip ${cls}"><span class="nm">${p.name}</span><span class="sc">${pk[0]}-${pk[1]}${tag}</span></div>`;
+    }).join('');
+    html+=`<div class="game">
+      <div class="ghead"><span class="gtag">Grupo ${g.grupo}</span><span>${dstr}</span>
+        <span class="badge" style="background:${state==='played'?'#2c3a5e':'transparent'};color:#9aa6c8">${state==='played'?'ENCERRADO':'A JOGAR'}</span></div>
+      <div class="gmain">
+        <div class="team a">${g.a}</div>
+        <div class="score">
+          <input type="number" min="0" inputmode="numeric" data-i="${i}" data-s="0" value="${r[0]??''}">
+          <span class="vs">x</span>
+          <input type="number" min="0" inputmode="numeric" data-i="${i}" data-s="1" value="${r[1]??''}">
+        </div>
+        <div class="team b">${g.b}</div>
+      </div>
+      <div class="picks"><h4>Palpites da galera</h4>
+        <div class="pgrid">${picksHtml||'<div class="empty">Sem palpites.</div>'}</div>
+      </div>
+    </div>`;
+  });
+  const el=document.getElementById('gamesList');
+  el.innerHTML = html || '<div class="empty" style="text-align:center;padding:30px">Nenhum jogo com esse filtro.</div>';
+  el.querySelectorAll('input[type=number]').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const i=+e.target.dataset.i, s=+e.target.dataset.s, v=e.target.value;
+      results[i][s]= v===''?null:Math.max(0,parseInt(v,10));
+      saveResults(); renderRank();
+    });
+  });
+}
+
+function render(){ renderRank(); if(view==='games') renderGames(); }
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); view=t.dataset.view;
+    document.getElementById('viewRank').style.display = view==='rank'?'':'none';
+    document.getElementById('viewGames').style.display = view==='games'?'':'none';
+    render();
+  });
+});
+
+[...new Set(D.games.map(g=>g.grupo))].sort().forEach(gr=>{
+  const o=document.createElement('option');o.value=gr;o.textContent='Grupo '+gr;
+  document.getElementById('filterGroup').appendChild(o);
+});
+document.getElementById('filterGroup').addEventListener('change',renderGames);
+document.getElementById('filterState').addEventListener('change',renderGames);
+
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  if(!confirm('Apagar todos os placares digitados/buscados?')) return;
+  results = D.games.map(()=>[null,null]); saveResults(); render();
+  setStatus('Resultados apagados.');
+});
+
+function setStatus(msg){ document.getElementById('status').textContent=msg; }
+function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');}
+
+const alias={ 'turkiye':'turkey','korearepublic':'southkorea','republicofkorea':'southkorea',
+  'czechia':'czechrepublic','unitedstates':'usa','unitedstatesofamerica':'usa',
+  'congodr':'drcongo','democraticrepublicofcongo':'drcongo','capeverdeislands':'capeverde',
+  'cotedivoire':'ivorycoast' };
+function canon(n){ n=norm(n); return alias[n]||n; }
+
+const enIndex={};
+D.games.forEach((g,i)=>{ enIndex[canon(g.enA)+'|'+canon(g.enB)]=i; enIndex[canon(g.enB)+'|'+canon(g.enA)]=i; });
+
+async function fetchResults(){
+  const btn=document.getElementById('fetchBtn'); btn.disabled=true;
+  setStatus('Buscando resultados...');
+  let events=null;
+  const sources=['/api/results','https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026'];
+  for(const url of sources){
+    try{
+      const res=await fetch(url,{cache:'no-store'});
+      if(!res.ok) continue;
+      const j=await res.json();
+      if(j&&j.events){ events=j.events; break; }
+    }catch(e){}
+  }
+  if(!events){ setStatus('⚠️ Não consegui buscar agora. Tente de novo ou digite manualmente.'); btn.disabled=false; return; }
+  let upd=0;
+  events.forEach(ev=>{
+    const ha=ev.intHomeScore, aw=ev.intAwayScore;
+    if(ha==null||aw==null||ha===''||aw==='') return;
+    const home=canon(ev.strHomeTeam), away=canon(ev.strAwayTeam);
+    let i = enIndex[home+'|'+away]; if(i==null) i = enIndex[away+'|'+home];
+    if(i==null) return;
+    const g=D.games[i];
+    let sa,sb;
+    if(canon(g.enA)===home){ sa=+ha; sb=+aw; } else { sa=+aw; sb=+ha; }
+    if(results[i][0]!==sa||results[i][1]!==sb){ results[i]=[sa,sb]; upd++; }
+  });
+  saveResults(); render();
+  setStatus(upd>0?`✅ ${upd} resultado(s) atualizado(s) · ${new Date().toLocaleTimeString('pt-BR')}`
+                 :`Nenhum jogo novo finalizado ainda · ${new Date().toLocaleTimeString('pt-BR')}`);
+  btn.disabled=false;
+}
+document.getElementById('fetchBtn').addEventListener('click',fetchResults);
+
+render();
+</script>
+</body>
+</html>
