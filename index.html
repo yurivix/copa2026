@@ -4,79 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bolao Copa 2026</title>
-<style>
-  :root{
-    --bg:#0b1020; --card:#141b33; --card2:#1b2444; --line:#26315a;
-    --txt:#eef2ff; --muted:#9aa6c8; --accent:#ffd54a; --green:#2fbf71;
-    --yellow:#e7b416; --blue:#3b82f6;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:linear-gradient(180deg,#0b1020,#0e1429);color:var(--txt);min-height:100vh}
-  header{padding:18px 16px;text-align:center;background:linear-gradient(135deg,#16204a,#0e1530);border-bottom:2px solid var(--accent)}
-  header h1{margin:0;font-size:22px}
-  header p{margin:4px 0 0;color:var(--muted);font-size:13px}
-  .wrap{max-width:1100px;margin:0 auto;padding:14px}
-  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
-  .tab{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
-  .tab.active{background:var(--accent);color:#10162e;border-color:var(--accent)}
-  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px}
-  .btn{background:var(--blue);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600}
-  .btn:disabled{opacity:.5;cursor:wait}
-  select{background:var(--card);color:var(--txt);border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:14px}
-  .status{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 14px}
-  .rank{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
-  .rrow{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
-  .rrow:last-child{border-bottom:none}
-  .pos{font-size:20px;font-weight:800;text-align:center;color:var(--muted)}
-  .pos.p1{color:#ffd700}.pos.p2{color:#c0c8e0}.pos.p3{color:#cd7f32}
-  .pname{font-weight:700;font-size:16px}
-  .pmeta{font-size:12px;color:var(--muted);margin-top:2px}
-  .pts{font-size:22px;font-weight:800;color:var(--accent);text-align:right;min-width:60px}
-  .pts span{font-size:12px;color:var(--muted);font-weight:600;display:block}
-  .chartcard{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:16px;padding:14px}
-  .chartcard h3{margin:0 0 4px;font-size:16px}
-  .chartcard .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
-  .chartbox{position:relative;height:360px}
-  .game{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
-  .ghead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
-  .gtag{background:#0e1530;border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-  .gmain{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;flex-wrap:wrap}
-  .team{font-weight:700;font-size:16px;min-width:120px}
-  .team.a{text-align:right}.team.b{text-align:left}
-  .score{display:flex;align-items:center;gap:8px}
-  .scorebox{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;background:#0e1530;border:2px solid var(--line);border-radius:8px;color:var(--txt)}
-  .scorebox.empty{color:var(--muted);font-weight:600}
-  .vs{color:var(--muted);font-weight:700}
-  .picks{padding:0 14px 14px}
-  .picks h4{margin:6px 0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase}
-  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-  .pchip{display:flex;justify-content:space-between;align-items:center;background:#0e1530;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
-  .pchip .nm{color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pchip .sc{font-weight:800;margin-left:8px;white-space:nowrap}
-  .pchip.g10{border-color:var(--green);background:rgba(47,191,113,.14)}
-  .pchip.g10 .sc{color:var(--green)}
-  .pchip.g5{border-color:var(--yellow);background:rgba(231,180,22,.12)}
-  .pchip.g5 .sc{color:var(--yellow)}
-  .pchip.g0{opacity:.65}
-  .badge{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;font-weight:700}
-  .empty{color:var(--muted);font-size:13px;padding:8px 0}
-  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
-  .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
-  @media(max-width:520px){.team{min-width:90px;font-size:14px}.rrow{grid-template-columns:38px 1fr auto}.chartbox{height:300px}}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
   <h1>Bolao Copa do Mundo 2026</h1>
-  <p>Placar exato = <b>10 pts</b> - Acertou o vencedor/empate = <b>5 pts</b></p>
+  <p>Placar exato = <b>10</b> &nbsp;|&nbsp; Resultado certo = <b>5</b> &nbsp;|&nbsp; Campeao = <b>10</b> &nbsp;|&nbsp; Artilheiro = <b>10</b></p>
+  <div class="themebar">
+    <button class="themebtn" data-theme="light">Claro</button>
+    <button class="themebtn" data-theme="dark">Escuro</button>
+    <button class="themebtn" data-theme="brazil">Verde-Amarelo</button>
+  </div>
 </header>
 
 <div class="wrap">
   <div class="tabs">
     <div class="tab active" data-view="rank">Classificacao</div>
     <div class="tab" data-view="games">Jogos &amp; Palpites</div>
+    <div class="tab" data-view="rules">Regras</div>
   </div>
 
   <div class="bar">
@@ -93,10 +38,9 @@
   <div id="viewRank">
     <div class="legend">
       <span><span class="dot" style="background:var(--green)"></span>Placar exato (10)</span>
-      <span><span class="dot" style="background:var(--yellow)"></span>Acertou o resultado (5)</span>
+      <span><span class="dot" style="background:var(--yellow)"></span>Resultado certo (5)</span>
     </div>
     <div class="rank" id="rankList"></div>
-
     <div class="chartcard">
       <h3>Movimentacao rodada a rodada</h3>
       <div class="sub">Posicao de cada participante ao fim de cada rodada da fase de grupos (1o no topo).</div>
@@ -107,11 +51,48 @@
   <div id="viewGames" style="display:none">
     <div id="gamesList"></div>
   </div>
+
+  <div id="viewRules" style="display:none">
+    <div class="card">
+      <h3>Definicoes do organizador</h3>
+      <div class="sub">Defina ao fim da Copa. Cada acerto vale 10 pontos.</div>
+      <div class="adminrow">
+        <label>Campeao</label>
+        <select id="champSel"><option value="">-- selecione --</option></select>
+      </div>
+      <div class="adminrow">
+        <label>Artilheiro</label>
+        <input type="text" id="artInput" placeholder="ex: Mbappe" style="flex:1;min-width:160px">
+      </div>
+      <div class="adminrow">
+        <button class="btn" id="saveDefs">Salvar definicoes</button>
+        <button class="btn" id="calcArt" title="Soma os gols de todos os jogos finalizados pela API">Calcular artilheiro pela API</button>
+      </div>
+      <div class="scorers" id="scorersBox"></div>
+    </div>
+    <div class="card">
+      <h3>Regras do bolao</h3>
+      <div class="rules">
+        Pontuacao:<br>
+        - Resultado exato (placar cravado): <b>10 pts</b><br>
+        - Resultado correto sem placar exato: <b>5 pts</b><br>
+        - Acertar o artilheiro da Copa: <b>10 pts</b><br>
+        - Acertar o campeao: <b>10 pts</b><br><br>
+        Criterio de desempate, nesta ordem:<br>
+        1. Maior numero de resultados exatos<br>
+        2. Acertou o campeao<br>
+        3. Acertou o artilheiro<br><br>
+        Prazos e pagamento:<br>
+        - Palpites da 1a fase e pagamento de <b>R$ 150,00</b> ate <b>06/06</b> (5 dias antes da 1a partida).<br>
+        - Palpites enviados no inbox do organizador <b>Chico Magliano</b>.<br>
+        - No mata-mata, os palpites vao ate <b>1 hora antes</b> do primeiro jogo de cada fase.
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer>
-  Resultados via TheSportsDB - os placares sao preenchidos automaticamente pela API.<br>
-  A classificacao fica salva neste navegador.
+  Resultados e gols via TheSportsDB. Classificacao e definicoes salvas neste navegador.
 </footer>
 
 <script src="data.js"></script>

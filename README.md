@@ -1,34 +1,45 @@
 # Bolao Copa do Mundo 2026
 
-Sistema online do bolao com classificacao automatica, grafico de movimentacao
-por rodada e resultados preenchidos automaticamente por API (TheSportsDB).
+Sistema online: classificacao automatica, grafico de movimentacao por rodada,
+3 temas (claro/escuro/verde-amarelo) e resultados + artilheiro vindos da API (TheSportsDB).
+
+## Pontuacao
+- Resultado exato (placar cravado): 10 pts
+- Resultado correto sem placar exato: 5 pts
+- Acertar o campeao: 10 pts
+- Acertar o artilheiro: 10 pts
+
+## Desempate (nesta ordem)
+1. Maior numero de resultados exatos
+2. Acertou o campeao
+3. Acertou o artilheiro
 
 ## Telas
-- Classificacao: ranking ao vivo. Placar exato = 10 pts, acertar so o vencedor/empate = 5 pts.
-  Abaixo do ranking, um grafico mostra a movimentacao de posicao de cada um rodada a rodada.
-- Jogos & Palpites: os 72 jogos da fase de grupos com o palpite de cada participante
-  (verde = cravou, amarelo = acertou o resultado).
-- Botao "Atualizar resultados": busca os placares reais na API. Os placares NAO podem
-  ser digitados manualmente - vem somente do banco de dados (DB).
+- Classificacao: ranking ao vivo + grafico de movimentacao por rodada.
+- Jogos & Palpites: os 72 jogos com o palpite de cada um (verde=cravou, amarelo=resultado certo).
+- Regras: o regulamento e o painel do organizador (define campeao e artilheiro).
+
+## Como os resultados entram
+- Botao "Atualizar resultados": placares reais vem da API (nao se digita na mao).
+- Campeao e artilheiro: o organizador define na aba Regras. O botao "Calcular artilheiro
+  pela API" soma os gols de todos os jogos finalizados e sugere o lider (precisa do site
+  publicado no Vercel, pois usa a funcao /api/scorers).
 
 ## Arquivos
-- index.html     -> a pagina (estrutura + estilo)
-- app.js         -> toda a logica (ranking, grafico, busca de resultados)
-- data.js        -> os 72 jogos e os palpites de todos
-- api/results.js -> funcao que busca os resultados (proxy da API, usado no Vercel)
-- vercel.json    -> configuracao do Vercel
+- index.html      -> estrutura da pagina
+- styles.css      -> estilos e os 3 temas
+- app.js          -> logica (ranking, desempate, grafico, temas, API)
+- data.js         -> 72 jogos + palpites + campeao/artilheiro de cada um
+- api/results.js  -> resultados dos jogos (proxy da API)
+- api/scorers.js  -> artilharia somando os gols de todos os jogos
+- vercel.json     -> configuracao do Vercel
 
 ## Publicar no Vercel (gratis)
-Opcao A (mais facil): suba esta pasta para um repositorio no GitHub e, no vercel.com,
-faca Add New -> Project -> Import -> Deploy. Voce recebe um link publico.
+Suba esta pasta para um repositorio no GitHub e, no vercel.com:
+Add New -> Project -> Import -> Deploy. Voce recebe um link publico.
+Ou pelo terminal: npm i -g vercel ; cd Bolao-Copa-2026 ; vercel ; vercel --prod
 
-Opcao B (terminal):
-  npm i -g vercel
-  cd Bolao-Copa-2026
-  vercel
-  vercel --prod
-
-## Observacoes
-- Antes de cada jogo os placares vem vazios; aparecem conforme os jogos sao disputados.
-- Funciona tambem abrindo o index.html direto no navegador (modo offline usa a API publica).
-- Para editar palpites, altere o arquivo data.js.
+## Observacao
+Abrindo o index.html direto no navegador funciona o ranking, o grafico e os temas;
+o auto-preenchimento usa a API publica, e o "calcular artilheiro" so funciona publicado no Vercel.
+Para editar palpites, altere o data.js.

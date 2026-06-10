@@ -1,0 +1,83 @@
+/* ===== Temas ===== */
+:root{ /* CLARO (padrao) */
+  --bg1:#f4f6fb; --bg2:#e9edf6; --card:#ffffff; --card2:#f0f3fa; --line:#d7deec;
+  --txt:#1a2238; --muted:#5b6680; --accent:#2563eb; --accent-txt:#ffffff;
+  --green:#1e9e5a; --yellow:#c98a00; --btn:#2563eb; --btn-txt:#fff;
+}
+[data-theme="dark"]{
+  --bg1:#0b1020; --bg2:#0e1429; --card:#141b33; --card2:#1b2444; --line:#26315a;
+  --txt:#eef2ff; --muted:#9aa6c8; --accent:#ffd54a; --accent-txt:#10162e;
+  --green:#2fbf71; --yellow:#e7b416; --btn:#3b82f6; --btn-txt:#fff;
+}
+[data-theme="brazil"]{
+  --bg1:#055c2b; --bg2:#02431f; --card:#0a7038; --card2:#0c5e30; --line:#1e9e5a;
+  --txt:#fff9e6; --muted:#d8f0d8; --accent:#ffdf00; --accent-txt:#04401d;
+  --green:#bff05a; --yellow:#ffdf00; --btn:#ffdf00; --btn-txt:#04401d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--txt);min-height:100vh}
+header{padding:18px 16px;text-align:center;background:linear-gradient(135deg,var(--card2),var(--bg2));border-bottom:3px solid var(--accent)}
+header h1{margin:0;font-size:22px}
+header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.themebar{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.themebtn{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:5px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:600}
+.themebtn.active{background:var(--accent);color:var(--accent-txt);border-color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:14px}
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.tab{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+.tab.active{background:var(--accent);color:var(--accent-txt);border-color:var(--accent)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px}
+.btn{background:var(--btn);color:var(--btn-txt);border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700}
+.btn:disabled{opacity:.5;cursor:wait}
+select,input[type=text]{background:var(--card);color:var(--txt);border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:14px}
+.status{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 14px}
+.rank{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.rrow{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.rrow:last-child{border-bottom:none}
+.pos{font-size:20px;font-weight:800;text-align:center;color:var(--muted)}
+.pos.p1{color:#ffb300}.pos.p2{color:#9aa6c8}.pos.p3{color:#cd7f32}
+.pname{font-weight:700;font-size:16px}
+.pmeta{font-size:12px;color:var(--muted);margin-top:2px}
+.tags{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap}
+.tg{font-size:11px;padding:2px 7px;border-radius:6px;background:var(--card2);border:1px solid var(--line);color:var(--muted)}
+.tg.ok{background:var(--green);color:#fff;border-color:var(--green)}
+.pts{font-size:22px;font-weight:800;color:var(--accent);text-align:right;min-width:64px}
+.pts span{font-size:12px;color:var(--muted);font-weight:600;display:block}
+.chartcard,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:16px;padding:14px}
+.chartcard h3,.card h3{margin:0 0 4px;font-size:16px}
+.chartcard .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+.chartbox{position:relative;height:360px}
+.game{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.ghead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
+.gtag{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.gmain{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;flex-wrap:wrap}
+.team{font-weight:700;font-size:16px;min-width:120px}
+.team.a{text-align:right}.team.b{text-align:left}
+.score{display:flex;align-items:center;gap:8px}
+.scorebox{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;background:var(--card2);border:2px solid var(--line);border-radius:8px;color:var(--txt)}
+.scorebox.empty{color:var(--muted);font-weight:600}
+.vs{color:var(--muted);font-weight:700}
+.picks{padding:0 14px 14px}
+.picks h4{margin:6px 0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pchip{display:flex;justify-content:space-between;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
+.pchip .nm{color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip .sc{font-weight:800;margin-left:8px;white-space:nowrap}
+.pchip.g10{border-color:var(--green);background:color-mix(in srgb,var(--green) 18%,transparent)}
+.pchip.g10 .sc{color:var(--green)}
+.pchip.g5{border-color:var(--yellow);background:color-mix(in srgb,var(--yellow) 16%,transparent)}
+.pchip.g5 .sc{color:var(--yellow)}
+.pchip.g0{opacity:.6}
+.badge{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;font-weight:700}
+.empty{color:var(--muted);font-size:13px;padding:8px 0}
+.adminrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.adminrow label{font-size:13px;color:var(--muted);min-width:90px;font-weight:600}
+.rules{line-height:1.7;font-size:14px}
+.rules b{color:var(--accent)}
+.scorers{margin-top:10px;font-size:13px;color:var(--muted)}
+.scorers div{padding:2px 0}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
+.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+@media(max-width:520px){.team{min-width:90px;font-size:14px}.rrow{grid-template-columns:38px 1fr auto}.chartbox{height:300px}}
