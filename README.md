@@ -1,43 +1,34 @@
-# Bolão Copa do Mundo 2026 🏆
+# Bolao Copa do Mundo 2026
 
-Sistema online do bolão com **classificação automática** e **resultados preenchidos por API** (TheSportsDB).
+Sistema online do bolao com classificacao automatica, grafico de movimentacao
+por rodada e resultados preenchidos automaticamente por API (TheSportsDB).
 
-## Como funciona
-- **Classificação**: ranking ao vivo. Placar exato = **10 pts**, acertar só o vencedor/empate = **5 pts**.
-- **Jogos & Palpites**: todos os 72 jogos da fase de grupos com o palpite de cada participante. As células ficam verdes (cravou) ou amarelas (acertou o resultado).
-- **🔄 Atualizar resultados**: busca os placares reais dos jogos automaticamente. Também dá pra digitar o placar manualmente em qualquer jogo.
-- Os placares ficam salvos no próprio navegador.
+## Telas
+- Classificacao: ranking ao vivo. Placar exato = 10 pts, acertar so o vencedor/empate = 5 pts.
+  Abaixo do ranking, um grafico mostra a movimentacao de posicao de cada um rodada a rodada.
+- Jogos & Palpites: os 72 jogos da fase de grupos com o palpite de cada participante
+  (verde = cravou, amarelo = acertou o resultado).
+- Botao "Atualizar resultados": busca os placares reais na API. Os placares NAO podem
+  ser digitados manualmente - vem somente do banco de dados (DB).
 
-## Publicar no Vercel (grátis)
+## Arquivos
+- index.html     -> a pagina (estrutura + estilo)
+- app.js         -> toda a logica (ranking, grafico, busca de resultados)
+- data.js        -> os 72 jogos e os palpites de todos
+- api/results.js -> funcao que busca os resultados (proxy da API, usado no Vercel)
+- vercel.json    -> configuracao do Vercel
 
-**Opção A — pelo site (mais fácil, sem instalar nada):**
-1. Crie uma conta em https://vercel.com (pode entrar com o GitHub/Google).
-2. Suba esta pasta `bolao-online` para um repositório no GitHub.
-3. No Vercel: **Add New → Project → Import** o repositório → **Deploy**.
-4. Pronto: você recebe um link público (ex: `bolao-copa.vercel.app`) para mandar no grupo.
+## Publicar no Vercel (gratis)
+Opcao A (mais facil): suba esta pasta para um repositorio no GitHub e, no vercel.com,
+faca Add New -> Project -> Import -> Deploy. Voce recebe um link publico.
 
-**Opção B — pelo terminal (Vercel CLI):**
-```bash
-npm i -g vercel
-cd bolao-online
-vercel        # siga as perguntas e confirme
-vercel --prod # publica a versão final
-```
+Opcao B (terminal):
+  npm i -g vercel
+  cd Bolao-Copa-2026
+  vercel
+  vercel --prod
 
-## Estrutura
-```
-bolao-online/
-├── index.html        # o sistema (interface + lógica)
-├── data.js           # jogos e palpites de todos
-├── api/results.js    # função que busca os resultados (proxy da API)
-├── vercel.json       # configuração do Vercel
-└── README.md
-```
-
-## Funciona offline também
-Você pode simplesmente abrir o `index.html` no navegador (duplo clique). Nesse modo, o botão de atualizar tenta a API pública diretamente. Hospedando no Vercel, ele usa a função `api/results` (mais estável).
-
-## Observações
-- Antes de cada jogo, os placares vêm vazios na API — eles aparecem conforme os jogos são disputados.
-- Se algum nome de seleção não bater com a API, é só digitar o placar manualmente naquele jogo.
-- Para adicionar/editar palpites, atualize o arquivo `data.js`.
+## Observacoes
+- Antes de cada jogo os placares vem vazios; aparecem conforme os jogos sao disputados.
+- Funciona tambem abrindo o index.html direto no navegador (modo offline usa a API publica).
+- Para editar palpites, altere o arquivo data.js.

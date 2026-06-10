@@ -3,36 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bolão Copa 2026</title>
+<title>Bolao Copa 2026</title>
 <style>
   :root{
     --bg:#0b1020; --card:#141b33; --card2:#1b2444; --line:#26315a;
     --txt:#eef2ff; --muted:#9aa6c8; --accent:#ffd54a; --green:#2fbf71;
-    --yellow:#e7b416; --red:#3a4366; --blue:#3b82f6;
+    --yellow:#e7b416; --blue:#3b82f6;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:linear-gradient(180deg,#0b1020,#0e1429);color:var(--txt);min-height:100vh}
-  header{padding:18px 16px;text-align:center;background:linear-gradient(135deg,#16204a,#0e1530);
-    border-bottom:2px solid var(--accent)}
-  header h1{margin:0;font-size:22px;letter-spacing:.5px}
+  header{padding:18px 16px;text-align:center;background:linear-gradient(135deg,#16204a,#0e1530);border-bottom:2px solid var(--accent)}
+  header h1{margin:0;font-size:22px}
   header p{margin:4px 0 0;color:var(--muted);font-size:13px}
   .wrap{max-width:1100px;margin:0 auto;padding:14px}
   .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
-  .tab{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:9px 16px;
-    border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+  .tab{background:var(--card);border:1px solid var(--line);color:var(--txt);padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
   .tab.active{background:var(--accent);color:#10162e;border-color:var(--accent)}
   .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:12px}
-  .btn{background:var(--blue);color:#fff;border:none;padding:10px 16px;border-radius:10px;
-    cursor:pointer;font-size:14px;font-weight:600}
-  .btn.alt{background:var(--card2);border:1px solid var(--line)}
+  .btn{background:var(--blue);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600}
   .btn:disabled{opacity:.5;cursor:wait}
   select{background:var(--card);color:var(--txt);border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:14px}
   .status{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 14px}
-  /* Ranking */
   .rank{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
-  .rrow{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;
-    padding:12px 14px;border-bottom:1px solid var(--line)}
+  .rrow{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
   .rrow:last-child{border-bottom:none}
   .pos{font-size:20px;font-weight:800;text-align:center;color:var(--muted)}
   .pos.p1{color:#ffd700}.pos.p2{color:#c0c8e0}.pos.p3{color:#cd7f32}
@@ -40,29 +34,24 @@
   .pmeta{font-size:12px;color:var(--muted);margin-top:2px}
   .pts{font-size:22px;font-weight:800;color:var(--accent);text-align:right;min-width:60px}
   .pts span{font-size:12px;color:var(--muted);font-weight:600;display:block}
-  /* Chart card */
   .chartcard{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:16px;padding:14px}
   .chartcard h3{margin:0 0 4px;font-size:16px}
   .chartcard .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
   .chartbox{position:relative;height:360px}
-  /* Games */
   .game{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
-  .ghead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);
-    font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
+  .ghead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
   .gtag{background:#0e1530;border:1px solid var(--line);border-radius:6px;padding:2px 8px}
   .gmain{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;flex-wrap:wrap}
   .team{font-weight:700;font-size:16px;min-width:120px}
   .team.a{text-align:right}.team.b{text-align:left}
   .score{display:flex;align-items:center;gap:8px}
-  .scorebox{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:800;background:#0e1530;border:2px solid var(--line);border-radius:8px;color:var(--txt)}
+  .scorebox{min-width:46px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;background:#0e1530;border:2px solid var(--line);border-radius:8px;color:var(--txt)}
   .scorebox.empty{color:var(--muted);font-weight:600}
   .vs{color:var(--muted);font-weight:700}
   .picks{padding:0 14px 14px}
-  .picks h4{margin:6px 0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .picks h4{margin:6px 0;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase}
   .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-  .pchip{display:flex;justify-content:space-between;align-items:center;background:#0e1530;
-    border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
+  .pchip{display:flex;justify-content:space-between;align-items:center;background:#0e1530;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
   .pchip .nm{color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pchip .sc{font-weight:800;margin-left:8px;white-space:nowrap}
   .pchip.g10{border-color:var(--green);background:rgba(47,191,113,.14)}
@@ -80,26 +69,26 @@
 </head>
 <body>
 <header>
-  <h1>⚽ Bolão Copa do Mundo 2026</h1>
-  <p>Placar exato = <b>10 pts</b> · Acertou o vencedor/empate = <b>5 pts</b></p>
+  <h1>Bolao Copa do Mundo 2026</h1>
+  <p>Placar exato = <b>10 pts</b> - Acertou o vencedor/empate = <b>5 pts</b></p>
 </header>
 
 <div class="wrap">
   <div class="tabs">
-    <div class="tab active" data-view="rank">🏆 Classificação</div>
-    <div class="tab" data-view="games">📋 Jogos &amp; Palpites</div>
+    <div class="tab active" data-view="rank">Classificacao</div>
+    <div class="tab" data-view="games">Jogos &amp; Palpites</div>
   </div>
 
   <div class="bar">
-    <button class="btn" id="fetchBtn">🔄 Atualizar resultados</button>
+    <button class="btn" id="fetchBtn">Atualizar resultados</button>
     <select id="filterGroup"><option value="">Todos os grupos</option></select>
     <select id="filterState">
       <option value="all">Todos os jogos</option>
-      <option value="played">Só já jogados</option>
-      <option value="pending">Só pendentes</option>
+      <option value="played">So ja jogados</option>
+      <option value="pending">So pendentes</option>
     </select>
   </div>
-  <div class="status" id="status">Pronto. Clique em "Atualizar resultados" quando os jogos começarem.</div>
+  <div class="status" id="status">Pronto. Clique em "Atualizar resultados" quando os jogos comecarem.</div>
 
   <div id="viewRank">
     <div class="legend">
@@ -109,8 +98,8 @@
     <div class="rank" id="rankList"></div>
 
     <div class="chartcard">
-      <h3>📈 Movimentação rodada a rodada</h3>
-      <div class="sub">Posição de cada participante ao fim de cada rodada da fase de grupos (1º no topo).</div>
+      <h3>Movimentacao rodada a rodada</h3>
+      <div class="sub">Posicao de cada participante ao fim de cada rodada da fase de grupos (1o no topo).</div>
       <div class="chartbox"><canvas id="moveChart"></canvas></div>
     </div>
   </div>
@@ -121,161 +110,12 @@
 </div>
 
 <footer>
-  Resultados via TheSportsDB · Os placares são preenchidos automaticamente pela API.<br>
-  A classificação fica salva neste navegador.
+  Resultados via TheSportsDB - os placares sao preenchidos automaticamente pela API.<br>
+  A classificacao fica salva neste navegador.
 </footer>
 
 <script src="data.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script>
-const D = window.BOLAO;
-const LS_KEY = 'bolao_copa_2026_results';
-let results = loadResults();
-let view = 'rank';
-let chart = null;
-
-function loadResults(){
-  try{ const r = JSON.parse(localStorage.getItem(LS_KEY)); if(Array.isArray(r)&&r.length===D.games.length) return r; }catch(e){}
-  return D.games.map(()=>[null,null]);
-}
-function saveResults(){ localStorage.setItem(LS_KEY, JSON.stringify(results)); }
-
-function scoreFor(real, pick){
-  const ra=real[0], rb=real[1], pa=pick[0], pb=pick[1];
-  if(ra==null||rb==null||pa==null||pb==null||pa===''||pb==='') return null;
-  if(Number(pa)===Number(ra)&&Number(pb)===Number(rb)) return 10;
-  const s=(x,y)=>Math.sign(Number(x)-Number(y));
-  if(s(ra,rb)===s(pa,pb)) return 5;
-  return 0;
-}
-
-// standings considering only games where filterFn(gameIndex) is true
-function standingsFiltered(filterFn){
-  return D.participants.map(p=>{
-    let total=0,exatos=0,acertos=0,jogados=0;
-    D.games.forEach((g,i)=>{
-      if(filterFn && !filterFn(i)) return;
-      const sc=scoreFor(results[i], p.picks[i]);
-      if(sc!=null){jogados++; total+=sc; if(sc===10)exatos++; else if(sc===5)acertos++;}
-    });
-    return {nick:p.name,label:p.label,total,exatos,acertos,jogados};
-  }).sort((a,b)=> b.total-a.total || b.exatos-a.exatos || a.nick.localeCompare(b.nick));
-}
-
-function renderRank(){
-  const st=standingsFiltered(null);
-  document.getElementById('rankList').innerHTML = st.map((s,i)=>{
-    const pos=i+1;
-    const champ = s.label.split('-').slice(1).join(' · ');
-    return `<div class="rrow">
-      <div class="pos p${pos}">${pos}º</div>
-      <div><div class="pname">${s.nick}</div>
-        <div class="pmeta">${s.exatos} cravadas · ${s.acertos} no resultado · ${s.jogados} jogos · 🏆 ${champ||'-'}</div></div>
-      <div class="pts">${s.total}<span>pontos</span></div>
-    </div>`;
-  }).join('');
-}
-
-// ---- Position movement chart ----
-const PALETTE=['#ffd54a','#3b82f6','#2fbf71','#e7607b','#a78bfa','#22d3ee','#f97316','#84cc16','#f43f5e','#94a3b8'];
-
-function renderChart(){
-  if(typeof Chart==='undefined') return;
-  // which group-stage rounds already have at least one finished game
-  const playedRounds=[];
-  for(let r=1;r<=3;r++){
-    const any=D.games.some((g,i)=>g.rodada===r && results[i][0]!=null && results[i][1]!=null);
-    if(any) playedRounds.push(r);
-  }
-  const card=document.querySelector('.chartcard');
-  if(playedRounds.length===0){
-    card.querySelector('.sub').textContent='O gráfico aparece assim que os primeiros resultados forem registrados.';
-    if(chart){chart.destroy();chart=null;}
-    return;
-  }
-  card.querySelector('.sub').textContent='Posição de cada participante ao fim de cada rodada da fase de grupos (1º no topo).';
-  const labels=['Início',...playedRounds.map(r=>'Rodada '+r)];
-  // for each checkpoint, standings using games with rodada<=r AND finished
-  const series={}; D.participants.forEach(p=>series[p.name]=[D.participants.length>1?null:1]);
-  // start: everyone tied -> position 1..n? show all at last place initially is odd; start them all at middle? We'll start with no points => alphabetical tie.
-  // Compute "Início" as all tied at 1 (flat), then movement begins.
-  D.participants.forEach(p=>series[p.name]=[ (D.participants.length+1)/2 ]); // neutral middle start
-  playedRounds.forEach(r=>{
-    const st=standingsFiltered(i=> D.games[i].rodada<=r && results[i][0]!=null && results[i][1]!=null);
-    st.forEach((s,idx)=> series[s.nick].push(idx+1));
-  });
-  const datasets=D.participants.map((p,idx)=>({
-    label:p.name,
-    data:series[p.name],
-    borderColor:PALETTE[idx%PALETTE.length],
-    backgroundColor:PALETTE[idx%PALETTE.length],
-    borderWidth:2.5, tension:.25, pointRadius:4, pointHoverRadius:6
-  }));
-  const n=D.participants.length;
-  if(chart) chart.destroy();
-  chart=new Chart(document.getElementById('moveChart'),{
-    type:'line',
-    data:{labels,datasets},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      interaction:{mode:'nearest',intersect:false},
-      scales:{
-        y:{reverse:true, min:1, max:n, ticks:{stepSize:1,color:'#9aa6c8',callback:v=>v+'º'},
-           grid:{color:'#26315a'}, title:{display:true,text:'Posição',color:'#9aa6c8'}},
-        x:{ticks:{color:'#9aa6c8'}, grid:{color:'#1b2444'}}
-      },
-      plugins:{
-        legend:{position:'bottom',labels:{color:'#eef2ff',boxWidth:14,padding:10,font:{size:12}}},
-        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'º'}}
-      }
-    }
-  });
-}
-
-function gameState(i){ const r=results[i]; return (r[0]!=null&&r[1]!=null)?'played':'pending'; }
-
-function renderGames(){
-  const grp=document.getElementById('filterGroup').value;
-  const stt=document.getElementById('filterState').value;
-  let html='';
-  D.games.forEach((g,i)=>{
-    if(grp && g.grupo!==grp) return;
-    const state=gameState(i);
-    if(stt==='played'&&state!=='played') return;
-    if(stt==='pending'&&state!=='pending') return;
-    const dt=new Date(g.data);
-    const dstr=dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    const r=results[i];
-    const sa = r[0]!=null?r[0]:'–', sb = r[1]!=null?r[1]:'–';
-    const picksHtml = D.participants.map(p=>{
-      const pk=p.picks[i];
-      if(pk[0]==null||pk[1]==null) return '';
-      const sc=scoreFor(r,pk);
-      const cls = sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
-      const tag = sc!=null?`<span class="badge" style="background:${sc===10?'#2fbf71':sc===5?'#e7b416':'#3a4366'};color:${sc===5?'#10162e':'#fff'}">+${sc}</span>`:'';
-      return `<div class="pchip ${cls}"><span class="nm">${p.name}</span><span class="sc">${pk[0]}-${pk[1]}${tag}</span></div>`;
-    }).join('');
-    html+=`<div class="game">
-      <div class="ghead"><span class="gtag">Grupo ${g.grupo} · ${g.rodada}ª rodada</span><span>${dstr}</span>
-        <span class="badge" style="background:${state==='played'?'#2c3a5e':'transparent'};color:#9aa6c8">${state==='played'?'ENCERRADO':'A JOGAR'}</span></div>
-      <div class="gmain">
-        <div class="team a">${g.a}</div>
-        <div class="score">
-          <div class="scorebox ${r[0]==null?'empty':''}">${sa}</div>
-          <span class="vs">x</span>
-          <div class="scorebox ${r[1]==null?'empty':''}">${sb}</div>
-        </div>
-        <div class="team b">${g.b}</div>
-      </div>
-      <div class="picks"><h4>Palpites da galera</h4>
-        <div class="pgrid">${picksHtml||'<div class="empty">Sem palpites.</div>'}</div>
-      </div>
-    </div>`;
-  });
-  const el=document.getElementById('gamesList');
-  el.innerHTML = html || '<div class="empty" style="text-align:center;padding:30px">Nenhum jogo com esse filtro.</div>';
-}
-
-function render(){ renderRank(); renderChart(); if(view==='games') renderGames(); }
-
-document.querySelectorAll('.tab').
+<script src="app.js"></script>
+</body>
+</html>
