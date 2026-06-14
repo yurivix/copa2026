@@ -208,15 +208,26 @@ function canon(nm){ nm=norm(nm); return alias[nm]||nm; }
 const enIndex={};
 D.games.forEach(function(g,i){ enIndex[canon(g.enA)+'|'+canon(g.enB)]=i; enIndex[canon(g.enB)+'|'+canon(g.enA)]=i; });
 
+function dateRange(start,end){ const out=[]; let d=new Date(start+'T00:00:00Z'); const e=new Date(end+'T00:00:00Z'); while(d<=e){ out.push(d.toISOString().slice(0,10)); d.setUTCDate(d.getUTCDate()+1);} return out; }
+async function fetchEventsClient(){
+  const dates=dateRange('2026-06-11','2026-07-20'); const all={}; const CHUNK=6;
+  for(let i=0;i<dates.length;i+=CHUNK){
+    const parts=await Promise.all(dates.slice(i,i+CHUNK).map(function(d){
+      return fetch('https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d='+d+'&l=4429',{cache:'no-store'}).then(function(r){return r.ok?r.json():{events:null};}).catch(function(){return {events:null};});
+    }));
+    parts.forEach(function(p){ (p.events||[]).forEach(function(ev){
+      const hs=ev.intHomeScore!=null&&ev.intHomeScore!==''; const prev=all[ev.idEvent];
+      const phs=prev&&prev.intHomeScore!=null&&prev.intHomeScore!==''; if(!prev||(hs&&!phs)) all[ev.idEvent]=ev; }); });
+  }
+  return Object.keys(all).map(function(k){return all[k];});
+}
 async function fetchResults(){
   const btn=document.getElementById('fetchBtn'); btn.disabled=true;
   setStatus('Buscando resultados...');
   let events=null;
-  const sources=['/api/results','https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026'];
-  for(const url of sources){
-    try{ const res=await fetch(url,{cache:'no-store'}); if(!res.ok) continue; const j=await res.json(); if(j&&j.events){events=j.events;break;} }catch(e){}
-  }
-  if(!events){ setStatus('Nao consegui buscar agora. Tente novamente em instantes.'); btn.disabled=false; return; }
+  try{ const res=await fetch('/api/results',{cache:'no-store'}); if(res.ok){ const j=await res.json(); if(j&&j.events&&j.events.length) events=j.events; } }catch(e){}
+  if(!events){ try{ events=await fetchEventsClient(); }catch(e){} }
+  if(!events||!events.length){ setStatus('Nao consegui buscar agora. Tente novamente em instantes.'); btn.disabled=false; return; }
   const fresh=D.games.map(function(){return [null,null];});
   let cnt=0;
   events.forEach(function(ev){
