@@ -239,19 +239,23 @@ function applyManual(res){
 
 function startedMs(ev){ if(!ev.strTimestamp) return Infinity; const t=Date.parse(ev.strTimestamp.replace(' ','T')+(/[zZ]|[+\-]\d\d:?\d\d$/.test(ev.strTimestamp)?'':'Z')); return isNaN(t)?Infinity:t; }
 async function fetchEventsClient(){
-  // lista completa pela rodada + placar de cada jogo iniciado pelo id
-  const base='https://www.thesportsdb.com/api/v1/json/3';
-  const rr=await fetch(base+'/eventsround.php?id=4429&r=1&s=2026',{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {events:null};});
-  const roster=(rr&&rr.events)||[]; const now=Date.now();
-  const ids=roster.filter(function(ev){return startedMs(ev)<=now;}).map(function(ev){return ev.idEvent;});
-  const byId={}; const CHUNK=8;
-  for(let i=0;i<ids.length;i+=CHUNK){
-    const parts=await Promise.all(ids.slice(i,i+CHUNK).map(function(id){
-      return fetch(base+'/lookupevent.php?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {events:null};});
-    }));
-    parts.forEach(function(p){ const ev=p&&p.events&&p.events[0]; if(ev) byId[ev.idEvent]=ev; });
-  }
-  return roster.map(function(ev){ return byId[ev.idEvent]||ev; });
+  const out=[];
+  function dr(st,en){const a=[];let d=new Date(st+'T00:00:00Z');const ee=new Date(en+'T00:00:00Z');while(d<=ee){a.push(d.toISOString().slice(0,10).replace(/-/g,''));d.setUTCDate(d.getUTCDate()+1);}return a;}
+  function esp(ev){const c=ev.competitions&&ev.competitions[0];if(!c)return null;const cs=c.competitors||[];const h=cs.find(function(x){return x.homeAway==='home';}),a=cs.find(function(x){return x.homeAway==='away';});if(!h||!a)return null;const stt=c.status&&c.status.type&&c.status.type.state;const started=(stt==='in'||stt==='post');return {strHomeTeam:h.team&&(h.team.name||h.team.displayName),strAwayTeam:a.team&&(a.team.name||a.team.displayName),intHomeScore:started?h.score:null,intAwayScore:started?a.score:null,strTimestamp:ev.date};}
+  try{
+    const dates=dr('2026-06-11','2026-07-20'); const CHUNK=6;
+    for(let i=0;i<dates.length;i+=CHUNK){
+      const parts=await Promise.all(dates.slice(i,i+CHUNK).map(function(d){
+        return fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates='+d,{cache:'no-store'}).then(function(r){return r.ok?r.json():{events:null};}).catch(function(){return {events:null};});
+      }));
+      parts.forEach(function(p){ (p.events||[]).forEach(function(ev){const c=esp(ev);if(c)out.push(c);}); });
+    }
+  }catch(e){}
+  try{
+    const rr=await fetch('https://www.thesportsdb.com/api/v1/json/3/eventsround.php?id=4429&r=1&s=2026',{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {events:null};});
+    ((rr&&rr.events)||[]).forEach(function(ev){ out.push({strHomeTeam:ev.strHomeTeam,strAwayTeam:ev.strAwayTeam,intHomeScore:ev.intHomeScore,intAwayScore:ev.intAwayScore,strTimestamp:ev.strTimestamp}); });
+  }catch(e){}
+  return out;
 }
 async function fetchResults(){
   const btn=document.getElementById('fetchBtn'); btn.disabled=true;
