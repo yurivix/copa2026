@@ -265,7 +265,6 @@ async function fetchResults(){
   if(!events){ try{ events=await fetchEventsClient(); }catch(e){} }
   if(!events||!events.length){ setStatus('Nao consegui buscar agora. Tente novamente em instantes.'); btn.disabled=false; return; }
   const fresh=D.games.map(function(){return [null,null];});
-  let cnt=0;
   events.forEach(function(ev){
     const home=canon(ev.strHomeTeam), away=canon(ev.strAwayTeam);
     let i=enIndex[home+'|'+away]; if(i==null) i=enIndex[away+'|'+home];
@@ -275,9 +274,9 @@ async function fetchResults(){
     if(ha==null||aw==null||ha===''||aw==='') return;
     const g=D.games[i];
     if(canon(g.enA)===home){ fresh[i]=[+ha,+aw]; } else { fresh[i]=[+aw,+ha]; }
-    cnt++;
   });
   saveTimes(); results=fresh; applyManual(results); saveResults(); render();
+  const cnt=results.filter(function(r){return r[0]!=null&&r[1]!=null;}).length;
   setStatus(cnt+' jogo(s) com resultado - atualizado '+new Date().toLocaleTimeString('pt-BR'));
   btn.disabled=false;
 }
