@@ -219,6 +219,23 @@ function canon(nm){ nm=norm(nm); return alias[nm]||nm; }
 const enIndex={};
 D.games.forEach(function(g,i){ enIndex[canon(g.enA)+'|'+canon(g.enB)]=i; enIndex[canon(g.enB)+'|'+canon(g.enA)]=i; });
 
+/* ---------- Resultados manuais (entram so quando a API nao traz; API tem prioridade) ---------- */
+/* Formato: [TimeCasa(EN), TimeFora(EN), golsCasa, golsFora] */
+const MANUAL_RAW=[
+  ['Australia','Turkey',2,0]
+];
+function applyManual(res){
+  MANUAL_RAW.forEach(function(m){
+    const home=canon(m[0]), away=canon(m[1]);
+    let i=enIndex[home+'|'+away]; if(i==null) i=enIndex[away+'|'+home];
+    if(i==null) return;
+    if(res[i] && res[i][0]!=null && res[i][1]!=null) return;
+    const g=D.games[i];
+    if(canon(g.enA)===home){ res[i]=[m[2],m[3]]; } else { res[i]=[m[3],m[2]]; }
+  });
+  return res;
+}
+
 function startedMs(ev){ if(!ev.strTimestamp) return Infinity; const t=Date.parse(ev.strTimestamp.replace(' ','T')+(/[zZ]|[+\-]\d\d:?\d\d$/.test(ev.strTimestamp)?'':'Z')); return isNaN(t)?Infinity:t; }
 async function fetchEventsClient(){
   // lista completa pela rodada + placar de cada jogo iniciado pelo id
@@ -255,7 +272,7 @@ async function fetchResults(){
     if(canon(g.enA)===home){ fresh[i]=[+ha,+aw]; } else { fresh[i]=[+aw,+ha]; }
     cnt++;
   });
-  saveTimes(); results=fresh; saveResults(); render();
+  saveTimes(); results=fresh; applyManual(results); saveResults(); render();
   setStatus(cnt+' jogo(s) com resultado - atualizado '+new Date().toLocaleTimeString('pt-BR'));
   btn.disabled=false;
 }
@@ -296,5 +313,6 @@ async function loadSchedule(){
   }catch(e){}
 }
 
+applyManual(results); saveResults();
 render();
 loadSchedule();
