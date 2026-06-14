@@ -222,7 +222,8 @@ D.games.forEach(function(g,i){ enIndex[canon(g.enA)+'|'+canon(g.enB)]=i; enIndex
 /* ---------- Resultados manuais (entram so quando a API nao traz; API tem prioridade) ---------- */
 /* Formato: [TimeCasa(EN), TimeFora(EN), golsCasa, golsFora] */
 const MANUAL_RAW=[
-  ['Australia','Turkey',2,0]
+  ['Australia','Turkey',2,0],
+  ['Netherlands','Japan',2,2]
 ];
 function applyManual(res){
   MANUAL_RAW.forEach(function(m){
