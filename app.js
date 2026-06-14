@@ -2,8 +2,10 @@ const D = window.BOLAO;
 const LS_RES = 'bolao_copa_2026_results';
 const LS_DEFS = 'bolao_copa_2026_defs';
 const LS_THEME = 'bolao_copa_2026_theme';
+const LS_TIMES = 'bolao_copa_2026_times';
 let results = loadResults();
 let defs = loadDefs();
+let apiTimes = loadTimes();
 let view = 'rank';
 let chart = null;
 
@@ -35,6 +37,16 @@ function loadDefs(){
   return {champ:'', art:''};
 }
 function saveDefs(){ localStorage.setItem(LS_DEFS, JSON.stringify(defs)); }
+function loadTimes(){ try{ const t=JSON.parse(localStorage.getItem(LS_TIMES)); if(t&&typeof t==='object') return t; }catch(e){} return {}; }
+function saveTimes(){ try{ localStorage.setItem(LS_TIMES, JSON.stringify(apiTimes)); }catch(e){} }
+function parseTs(ts){ if(!ts) return null; const d=new Date(ts.replace(' ','T')+(/[zZ]|[+\-]\d\d:?\d\d$/.test(ts)?'':'Z')); return isNaN(d)?null:d; }
+function fmtTZ(d,tz){ return d.toLocaleString('pt-BR',{timeZone:tz,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+function fmtWhen(i,g){
+  const d=parseTs(apiTimes[i]);
+  if(d) return 'BRT '+fmtTZ(d,'America/Sao_Paulo')+' &middot; UTC '+fmtTZ(d,'UTC');
+  const dd=new Date(g.data);
+  return isNaN(dd)?'' : dd.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' (previsto)';
+}
 
 /* ---------- Util ---------- */
 function norm(s){ if(!s) return ''; return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,''); }
@@ -137,8 +149,7 @@ function renderGames(){
     const state=gameState(i);
     if(stt==='played'&&state!=='played') return;
     if(stt==='pending'&&state!=='pending') return;
-    const dt=new Date(g.data);
-    const dstr=dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const dstr=fmtWhen(i,g);
     const r=results[i];
     const sa=r[0]!=null?r[0]:'-', sb=r[1]!=null?r[1]:'-';
     const picksHtml=D.participants.map(function(p){
@@ -208,18 +219,21 @@ function canon(nm){ nm=norm(nm); return alias[nm]||nm; }
 const enIndex={};
 D.games.forEach(function(g,i){ enIndex[canon(g.enA)+'|'+canon(g.enB)]=i; enIndex[canon(g.enB)+'|'+canon(g.enA)]=i; });
 
-function dateRange(start,end){ const out=[]; let d=new Date(start+'T00:00:00Z'); const e=new Date(end+'T00:00:00Z'); while(d<=e){ out.push(d.toISOString().slice(0,10)); d.setUTCDate(d.getUTCDate()+1);} return out; }
+function startedMs(ev){ if(!ev.strTimestamp) return Infinity; const t=Date.parse(ev.strTimestamp.replace(' ','T')+(/[zZ]|[+\-]\d\d:?\d\d$/.test(ev.strTimestamp)?'':'Z')); return isNaN(t)?Infinity:t; }
 async function fetchEventsClient(){
-  const dates=dateRange('2026-06-11','2026-07-20'); const all={}; const CHUNK=6;
-  for(let i=0;i<dates.length;i+=CHUNK){
-    const parts=await Promise.all(dates.slice(i,i+CHUNK).map(function(d){
-      return fetch('https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d='+d+'&l=4429',{cache:'no-store'}).then(function(r){return r.ok?r.json():{events:null};}).catch(function(){return {events:null};});
+  // lista completa pela rodada + placar de cada jogo iniciado pelo id
+  const base='https://www.thesportsdb.com/api/v1/json/3';
+  const rr=await fetch(base+'/eventsround.php?id=4429&r=1&s=2026',{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {events:null};});
+  const roster=(rr&&rr.events)||[]; const now=Date.now();
+  const ids=roster.filter(function(ev){return startedMs(ev)<=now;}).map(function(ev){return ev.idEvent;});
+  const byId={}; const CHUNK=8;
+  for(let i=0;i<ids.length;i+=CHUNK){
+    const parts=await Promise.all(ids.slice(i,i+CHUNK).map(function(id){
+      return fetch(base+'/lookupevent.php?id='+id,{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {events:null};});
     }));
-    parts.forEach(function(p){ (p.events||[]).forEach(function(ev){
-      const hs=ev.intHomeScore!=null&&ev.intHomeScore!==''; const prev=all[ev.idEvent];
-      const phs=prev&&prev.intHomeScore!=null&&prev.intHomeScore!==''; if(!prev||(hs&&!phs)) all[ev.idEvent]=ev; }); });
+    parts.forEach(function(p){ const ev=p&&p.events&&p.events[0]; if(ev) byId[ev.idEvent]=ev; });
   }
-  return Object.keys(all).map(function(k){return all[k];});
+  return roster.map(function(ev){ return byId[ev.idEvent]||ev; });
 }
 async function fetchResults(){
   const btn=document.getElementById('fetchBtn'); btn.disabled=true;
@@ -231,16 +245,17 @@ async function fetchResults(){
   const fresh=D.games.map(function(){return [null,null];});
   let cnt=0;
   events.forEach(function(ev){
-    const ha=ev.intHomeScore, aw=ev.intAwayScore;
-    if(ha==null||aw==null||ha===''||aw==='') return;
     const home=canon(ev.strHomeTeam), away=canon(ev.strAwayTeam);
     let i=enIndex[home+'|'+away]; if(i==null) i=enIndex[away+'|'+home];
     if(i==null) return;
+    if(ev.strTimestamp) apiTimes[i]=ev.strTimestamp;
+    const ha=ev.intHomeScore, aw=ev.intAwayScore;
+    if(ha==null||aw==null||ha===''||aw==='') return;
     const g=D.games[i];
     if(canon(g.enA)===home){ fresh[i]=[+ha,+aw]; } else { fresh[i]=[+aw,+ha]; }
     cnt++;
   });
-  results=fresh; saveResults(); render();
+  saveTimes(); results=fresh; saveResults(); render();
   setStatus(cnt+' jogo(s) com resultado - atualizado '+new Date().toLocaleTimeString('pt-BR'));
   btn.disabled=false;
 }
@@ -266,4 +281,20 @@ async function calcArt(){
 }
 document.getElementById('calcArt').addEventListener('click',calcArt);
 
+async function loadSchedule(){
+  try{
+    const base='https://www.thesportsdb.com/api/v1/json/3';
+    const rr=await fetch(base+'/eventsround.php?id=4429&r=1&s=2026',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});
+    const roster=(rr&&rr.events)||[]; let changed=false;
+    roster.forEach(function(ev){
+      const home=canon(ev.strHomeTeam), away=canon(ev.strAwayTeam);
+      let i=enIndex[home+'|'+away]; if(i==null) i=enIndex[away+'|'+home];
+      if(i==null||!ev.strTimestamp) return;
+      if(apiTimes[i]!==ev.strTimestamp){ apiTimes[i]=ev.strTimestamp; changed=true; }
+    });
+    if(changed){ saveTimes(); if(view==='games') renderGames(); }
+  }catch(e){}
+}
+
 render();
+loadSchedule();
