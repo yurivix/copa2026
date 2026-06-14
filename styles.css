@@ -2,17 +2,17 @@
 :root{ /* CLARO (padrao) */
   --bg1:#f4f6fb; --bg2:#e9edf6; --card:#ffffff; --card2:#f0f3fa; --line:#d7deec;
   --txt:#1a2238; --muted:#5b6680; --accent:#2563eb; --accent-txt:#ffffff;
-  --green:#1e9e5a; --yellow:#c98a00; --btn:#2563eb; --btn-txt:#fff;
+  --green:#1e9e5a; --yellow:#c98a00; --red:#d63b3b; --btn:#2563eb; --btn-txt:#fff;
 }
 [data-theme="dark"]{
   --bg1:#0b1020; --bg2:#0e1429; --card:#141b33; --card2:#1b2444; --line:#26315a;
   --txt:#eef2ff; --muted:#9aa6c8; --accent:#ffd54a; --accent-txt:#10162e;
-  --green:#2fbf71; --yellow:#e7b416; --btn:#3b82f6; --btn-txt:#fff;
+  --green:#2fbf71; --yellow:#e7b416; --red:#ef4444; --btn:#3b82f6; --btn-txt:#fff;
 }
 [data-theme="brazil"]{
   --bg1:#055c2b; --bg2:#02431f; --card:#0a7038; --card2:#0c5e30; --line:#1e9e5a;
   --txt:#fff9e6; --muted:#d8f0d8; --accent:#ffdf00; --accent-txt:#04401d;
-  --green:#bff05a; --yellow:#ffdf00; --btn:#ffdf00; --btn-txt:#04401d;
+  --green:#bff05a; --yellow:#ffdf00; --red:#ff6b6b; --btn:#ffdf00; --btn-txt:#04401d;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -68,7 +68,8 @@ select,input[type=text]{background:var(--card);color:var(--txt);border:1px solid
 .pchip.g10 .sc{color:var(--green)}
 .pchip.g5{border-color:var(--yellow);background:color-mix(in srgb,var(--yellow) 16%,transparent)}
 .pchip.g5 .sc{color:var(--yellow)}
-.pchip.g0{opacity:.6}
+.pchip.g0{border-color:var(--red);background:color-mix(in srgb,var(--red) 14%,transparent)}
+.pchip.g0 .sc{color:var(--red)}
 .badge{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;font-weight:700}
 .empty{color:var(--muted);font-size:13px;padding:8px 0}
 .adminrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}

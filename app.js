@@ -157,7 +157,7 @@ function renderGames(){
       if(pk[0]==null||pk[1]==null) return '';
       const sc=scoreFor(r,pk);
       const cls=sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
-      const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'#888')+';color:#fff">+'+sc+'</span>':'';
+      const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'var(--red)')+';color:#fff">+'+sc+'</span>':'';
       return '<div class="pchip '+cls+'"><span class="nm">'+p.name+'</span><span class="sc">'+pk[0]+'-'+pk[1]+tag+'</span></div>';
     }).join('');
     html+='<div class="game">'
