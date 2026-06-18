@@ -102,39 +102,44 @@ function renderRank(){
 
 /* ---------- Grafico ---------- */
 const PALETTE=['#e7607b','#3b82f6','#1e9e5a','#f97316','#a78bfa','#22d3ee','#eab308','#84cc16','#ef4444','#64748b'];
+function kickoffMs(i){ const d=parseTs(apiTimes[i]); if(d) return d.getTime(); const dd=new Date(D.games[i].data); return isNaN(dd)?0:dd.getTime(); }
 function renderChart(){
   if(typeof Chart==='undefined') return;
-  const playedRounds=[];
-  for(let r=1;r<=3;r++){
-    const any=D.games.some(function(g,i){ return g.rodada===r && results[i][0]!=null && results[i][1]!=null; });
-    if(any) playedRounds.push(r);
-  }
   const card=document.querySelector('.chartcard');
-  if(playedRounds.length===0){
+  const played=[];
+  D.games.forEach(function(g,i){ if(results[i][0]!=null && results[i][1]!=null) played.push(i); });
+  played.sort(function(a,b){ return kickoffMs(a)-kickoffMs(b); });
+  if(played.length===0){
     card.querySelector('.sub').textContent='O grafico aparece assim que os primeiros resultados forem registrados.';
     if(chart){chart.destroy();chart=null;}
     return;
   }
-  card.querySelector('.sub').textContent='Posicao de cada participante ao fim de cada rodada (so pontos de jogos).';
+  card.querySelector('.sub').textContent='Posicao de cada participante apos cada jogo encerrado (1o no topo).';
   const n=D.participants.length;
-  const labels=['Inicio'].concat(playedRounds.map(function(r){return 'Rodada '+r;}));
-  const series={};
-  D.participants.forEach(function(p){ series[p.name]=[(n+1)/2]; });
-  playedRounds.forEach(function(r){
-    const st=calc(function(i){ return D.games[i].rodada<=r && results[i][0]!=null && results[i][1]!=null; }, false);
+  const labels=['Inicio']; const meta=[''];
+  const series={}; D.participants.forEach(function(p){ series[p.name]=[(n+1)/2]; });
+  for(let k=1;k<=played.length;k++){
+    const setIdx={}; played.slice(0,k).forEach(function(x){ setIdx[x]=true; });
+    const st=calc(function(i){ return setIdx[i]===true; }, false);
     st.forEach(function(s,idx){ series[s.nick].push(idx+1); });
-  });
+    const gi=played[k-1], g=D.games[gi];
+    labels.push(String(k));
+    meta.push(g.a+' '+results[gi][0]+'x'+results[gi][1]+' '+g.b);
+  }
   const datasets=D.participants.map(function(p,idx){
     return {label:p.name, data:series[p.name], borderColor:PALETTE[idx%PALETTE.length],
-      backgroundColor:PALETTE[idx%PALETTE.length], borderWidth:2.5, tension:.25, pointRadius:4, pointHoverRadius:6};
+      backgroundColor:PALETTE[idx%PALETTE.length], borderWidth:2.5, tension:.2, pointRadius:3, pointHoverRadius:6};
   });
   if(chart) chart.destroy();
   chart=new Chart(document.getElementById('moveChart'),{
     type:'line', data:{labels:labels,datasets:datasets},
     options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'nearest',intersect:false},
-      scales:{ y:{reverse:true,min:1,max:n,ticks:{stepSize:1,callback:function(v){return v+'o';}},title:{display:true,text:'Posicao'}}, x:{} },
+      scales:{ y:{reverse:true,min:1,max:n,ticks:{stepSize:1,callback:function(v){return v+'o';}},title:{display:true,text:'Posicao'}},
+        x:{title:{display:true,text:'Jogos (na ordem)'},ticks:{autoSkip:true,maxTicksLimit:14}} },
       plugins:{ legend:{position:'bottom',labels:{boxWidth:14,padding:10,font:{size:12}}},
-        tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y+'o';}}} } }
+        tooltip:{callbacks:{
+          title:function(items){ const di=items[0].dataIndex; return di===0?'Inicio':('Jogo '+labels[di]+(meta[di]?': '+meta[di]:'')); },
+          label:function(c){return c.dataset.label+': '+c.parsed.y+'o';} }} } }
   });
 }
 
