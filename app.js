@@ -179,7 +179,38 @@ function renderGames(){
   el.innerHTML=html||'<div class="empty" style="text-align:center;padding:30px">Nenhum jogo com esse filtro.</div>';
 }
 
-function render(){ renderRank(); renderChart(); if(view==='games') renderGames(); }
+
+/* ---------- Mata-mata (chaveamento) ---------- */
+const KO=[
+ {r:'32 avos', ms:[
+   {m:73,h:'2o A',a:'2o B'},{m:74,h:'1o E',a:'3o A/B/C/D/F'},{m:75,h:'1o F',a:'2o C'},{m:76,h:'1o C',a:'2o F'},
+   {m:77,h:'1o I',a:'3o C/D/F/G/H'},{m:78,h:'2o E',a:'2o I'},{m:79,h:'1o A',a:'3o C/E/F/H/I'},{m:80,h:'1o L',a:'3o E/H/I/J/K'},
+   {m:81,h:'1o D',a:'3o B/E/F/I/J'},{m:82,h:'1o G',a:'3o A/E/H/I/J'},{m:83,h:'2o K',a:'2o L'},{m:84,h:'1o H',a:'2o J'},
+   {m:85,h:'1o B',a:'3o E/F/G/I/J'},{m:86,h:'1o J',a:'2o H'},{m:87,h:'1o K',a:'3o D/E/I/J/L'},{m:88,h:'2o D',a:'2o G'}
+ ]},
+ {r:'Oitavas', ms:[
+   {m:89,h:'V74',a:'V77'},{m:90,h:'V73',a:'V75'},{m:91,h:'V76',a:'V78'},{m:92,h:'V79',a:'V80'},
+   {m:93,h:'V83',a:'V84'},{m:94,h:'V81',a:'V82'},{m:95,h:'V86',a:'V88'},{m:96,h:'V85',a:'V87'}
+ ]},
+ {r:'Quartas', ms:[ {m:97,h:'V89',a:'V90'},{m:98,h:'V93',a:'V94'},{m:99,h:'V91',a:'V92'},{m:100,h:'V95',a:'V96'} ]},
+ {r:'Semifinais', ms:[ {m:101,h:'V97',a:'V98'},{m:102,h:'V99',a:'V100'} ]},
+ {r:'3o lugar', ms:[ {m:103,h:'Perdedor 101',a:'Perdedor 102'} ]},
+ {r:'Final', ms:[ {m:104,h:'V101',a:'V102'} ]}
+];
+function koStr(m,side){ /* gancho futuro p/ time/placar reais */ return null; }
+function renderKO(){
+  const wrap=document.getElementById('koWrap');
+  wrap.innerHTML = KO.map(function(col){
+    const matches=col.ms.map(function(g){
+      return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'
+        + '<div class="ko-slot"><span class="nm">'+g.h+'</span><span class="sc">-</span></div>'
+        + '<div class="ko-slot"><span class="nm">'+g.a+'</span><span class="sc">-</span></div></div>';
+    }).join('');
+    return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div>'+matches+'</div>';
+  }).join('');
+}
+
+function render(){ renderRank(); renderChart(); if(view==='games') renderGames(); if(view==='ko') renderKO(); }
 
 /* ---------- Abas ---------- */
 document.querySelectorAll('.tab').forEach(function(t){
@@ -188,6 +219,7 @@ document.querySelectorAll('.tab').forEach(function(t){
     t.classList.add('active'); view=t.dataset.view;
     document.getElementById('viewRank').style.display = view==='rank'?'':'none';
     document.getElementById('viewGames').style.display = view==='games'?'':'none';
+    document.getElementById('viewKO').style.display = view==='ko'?'':'none';
     document.getElementById('viewRules').style.display = view==='rules'?'':'none';
     render();
   });
