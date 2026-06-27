@@ -70,6 +70,7 @@ function scoreFor(real, pick){
 
 /* ---------- Classificacao ---------- */
 function calc(filterFn, withBonus){
+  const koReal = withBonus ? koRealScores() : null;
   return D.participants.map(function(p){
     let total=0,exatos=0,acertos=0,jogados=0;
     D.games.forEach(function(g,i){
@@ -81,6 +82,15 @@ function calc(filterFn, withBonus){
     if(withBonus){
       if(defs.champ && norm(defs.champ)===norm(p.campeao)){ champOK=true; total+=10; }
       if(defs.art && nameMatch(defs.art, p.artilheiro)){ artOK=true; total+=10; }
+      if(koReal && p.ko){
+        Object.keys(p.ko).forEach(function(m){
+          const real=koReal[m], pk=p.ko[m];
+          if(!real||!pk||pk[0]==null||pk[1]==null||real[0]==null||real[1]==null) return;
+          jogados++;
+          if(Number(pk[0])===Number(real[0])&&Number(pk[1])===Number(real[1])){ total+=10; exatos++; }
+          else if(Math.sign(Number(real[0])-Number(real[1]))===Math.sign(Number(pk[0])-Number(pk[1]))){ total+=5; acertos++; }
+        });
+      }
     }
     return {nick:p.name,campeao:p.campeao,artilheiro:p.artilheiro,total:total,exatos:exatos,acertos:acertos,jogados:jogados,champOK:champOK,artOK:artOK};
   }).sort(function(a,b){
@@ -201,6 +211,10 @@ const KO=[
  {r:'3o lugar', ms:[ {m:103,h:'Perdedor 101',a:'Perdedor 102'} ]},
  {r:'Final', ms:[ {m:104,h:'V101',a:'V102'} ]}
 ];
+/* Placar de 90 MINUTOS para jogos que foram a prorrogacao/penaltis.
+   So preencher quando o placar final (com prorrogacao) for diferente do de 90 min.
+   Ex.: KO90={ '101':[1,1] }  (semifinal jogo 101 estava 1x1 nos 90 min) */
+const KO90={};
 const FLAGCODE={"México": "mx", "África do Sul": "za", "Coreia do Sul": "kr", "Chéquia": "cz", "Canadá": "ca", "Bósnia e Herzegovina": "ba", "Estados Unidos": "us", "Paraguai": "py", "Austrália": "au", "Turquia": "tr", "Catar": "qa", "Suíça": "ch", "Brasil": "br", "Marrocos": "ma", "Haiti": "ht", "Escócia": "gb-sct", "Alemanha": "de", "Curaçao": "cw", "Holanda": "nl", "Japão": "jp", "Costa do Marfim": "ci", "Equador": "ec", "Suécia": "se", "Tunísia": "tn", "Espanha": "es", "Cabo Verde": "cv", "Bélgica": "be", "Egito": "eg", "Arábia Saudita": "sa", "Uruguai": "uy", "Irã": "ir", "Nova Zelândia": "nz", "França": "fr", "Senegal": "sn", "Iraque": "iq", "Noruega": "no", "Argentina": "ar", "Argélia": "dz", "Áustria": "at", "Jordânia": "jo", "Portugal": "pt", "Congo DR": "cd", "Uzbequistão": "uz", "Colômbia": "co", "Inglaterra": "gb-eng", "Croácia": "hr", "Gana": "gh", "Panamá": "pa"};
 let FLAG=null;
 function buildFlags(){ FLAG={}; Object.keys(FLAGCODE).forEach(function(pt){ var c=FLAGCODE[pt]; FLAG[canon(pt)]=c; var en=(D.pt2en&&D.pt2en[pt]); if(en) FLAG[canon(en)]=c; }); }
@@ -297,6 +311,12 @@ function resolveBracket(){
     });
   });
   return {T:T,R:R};
+}
+function koRealScores(){
+  const res=resolveBracket(); const out={};
+  Object.keys(res.R).forEach(function(m){ const r=res.R[m]; if(r.sh!=null&&r.sa!=null) out[m]=[r.sh,r.sa]; });
+  Object.keys(KO90).forEach(function(m){ out[m]=KO90[m]; }); // override 90 min
+  return out;
 }
 function renderKO(){
   const wrap=document.getElementById('koWrap');
