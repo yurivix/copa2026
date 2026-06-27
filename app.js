@@ -6,6 +6,8 @@ const LS_TIMES = 'bolao_copa_2026_times';
 let results = loadResults();
 let defs = loadDefs();
 let apiTimes = loadTimes();
+const LS_KO='bolao_copa_2026_ko';
+let koGames = loadKO();
 let view = 'rank';
 let chart = null;
 
@@ -39,6 +41,8 @@ function loadDefs(){
 function saveDefs(){ localStorage.setItem(LS_DEFS, JSON.stringify(defs)); }
 function loadTimes(){ try{ const t=JSON.parse(localStorage.getItem(LS_TIMES)); if(t&&typeof t==='object') return t; }catch(e){} return {}; }
 function saveTimes(){ try{ localStorage.setItem(LS_TIMES, JSON.stringify(apiTimes)); }catch(e){} }
+function loadKO(){ try{ const k=JSON.parse(localStorage.getItem(LS_KO)); if(Array.isArray(k)) return k; }catch(e){} return []; }
+function saveKO(){ try{ localStorage.setItem(LS_KO, JSON.stringify(koGames)); }catch(e){} }
 function parseTs(ts){ if(!ts) return null; const d=new Date(ts.replace(' ','T')+(/[zZ]|[+\-]\d\d:?\d\d$/.test(ts)?'':'Z')); return isNaN(d)?null:d; }
 function fmtTZ(d,tz){ return d.toLocaleString('pt-BR',{timeZone:tz,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); }
 function fmtWhen(i,g){
@@ -88,7 +92,7 @@ function renderRank(){
   const st=calc(null, true);
   document.getElementById('rankList').innerHTML = st.map(function(s,i){
     const pos=i+1;
-    const champTg='<span class="tg '+(s.champOK?'ok':'')+'">Campeao: '+s.campeao+'</span>';
+    const champTg='<span class="tg '+(s.champOK?'ok':'')+'">Campeao: '+flag(s.campeao)+s.campeao+'</span>';
     const artTg='<span class="tg '+(s.artOK?'ok':'')+'">Artilheiro: '+s.artilheiro+'</span>';
     return '<div class="rrow">'
       + '<div class="pos p'+pos+'">'+pos+'o</div>'
@@ -168,10 +172,10 @@ function renderGames(){
     html+='<div class="game">'
       + '<div class="ghead"><span class="gtag">Grupo '+g.grupo+' - '+g.rodada+'a rodada</span><span>'+dstr+'</span>'
       + '<span class="badge" style="background:var(--card2);color:var(--muted)">'+(state==='played'?'ENCERRADO':'A JOGAR')+'</span></div>'
-      + '<div class="gmain"><div class="team a">'+g.a+'</div>'
+      + '<div class="gmain"><div class="team a">'+flag(g.a)+g.a+'</div>'
       + '<div class="score"><div class="scorebox '+(r[0]==null?'empty':'')+'">'+sa+'</div>'
       + '<span class="vs">x</span><div class="scorebox '+(r[1]==null?'empty':'')+'">'+sb+'</div></div>'
-      + '<div class="team b">'+g.b+'</div></div>'
+      + '<div class="team b">'+flag(g.b)+g.b+'</div></div>'
       + '<div class="picks"><h4>Palpites da galera</h4>'
       + '<div class="pgrid">'+(picksHtml||'<div class="empty">Sem palpites.</div>')+'</div></div></div>';
   });
@@ -197,19 +201,118 @@ const KO=[
  {r:'3o lugar', ms:[ {m:103,h:'Perdedor 101',a:'Perdedor 102'} ]},
  {r:'Final', ms:[ {m:104,h:'V101',a:'V102'} ]}
 ];
-function koStr(m,side){ /* gancho futuro p/ time/placar reais */ return null; }
+const EMOJI={"México": "🇲🇽", "África do Sul": "🇿🇦", "Coreia do Sul": "🇰🇷", "Chéquia": "🇨🇿", "Canadá": "🇨🇦", "Bósnia e Herzegovina": "🇧🇦", "Estados Unidos": "🇺🇸", "Paraguai": "🇵🇾", "Austrália": "🇦🇺", "Turquia": "🇹🇷", "Catar": "🇶🇦", "Suíça": "🇨🇭", "Brasil": "🇧🇷", "Marrocos": "🇲🇦", "Haiti": "🇭🇹", "Escócia": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Alemanha": "🇩🇪", "Curaçao": "🇨🇼", "Holanda": "🇳🇱", "Japão": "🇯🇵", "Costa do Marfim": "🇨🇮", "Equador": "🇪🇨", "Suécia": "🇸🇪", "Tunísia": "🇹🇳", "Espanha": "🇪🇸", "Cabo Verde": "🇨🇻", "Bélgica": "🇧🇪", "Egito": "🇪🇬", "Arábia Saudita": "🇸🇦", "Uruguai": "🇺🇾", "Irã": "🇮🇷", "Nova Zelândia": "🇳🇿", "França": "🇫🇷", "Senegal": "🇸🇳", "Iraque": "🇮🇶", "Noruega": "🇳🇴", "Argentina": "🇦🇷", "Argélia": "🇩🇿", "Áustria": "🇦🇹", "Jordânia": "🇯🇴", "Portugal": "🇵🇹", "Congo DR": "🇨🇩", "Uzbequistão": "🇺🇿", "Colômbia": "🇨🇴", "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Croácia": "🇭🇷", "Gana": "🇬🇭", "Panamá": "🇵🇦"};
+let FLAG=null;
+function buildFlags(){ FLAG={}; Object.keys(EMOJI).forEach(function(pt){ var e=EMOJI[pt]; FLAG[canon(pt)]=e; var en=(D.pt2en&&D.pt2en[pt]); if(en) FLAG[canon(en)]=e; }); }
+function flag(name){ if(!FLAG) buildFlags(); var e=FLAG[canon(name)]; return e?e+' ':''; }
+
+function koRoundByDate(ms){
+  const s=new Date(ms).toISOString().slice(0,10);
+  if(s<='2026-06-27') return null;
+  if(s<='2026-07-03') return 'r32';
+  if(s<='2026-07-07') return 'r16';
+  if(s<='2026-07-11') return 'qf';
+  if(s<='2026-07-15') return 'sf';
+  if(s<='2026-07-18') return 'tp';
+  return 'fn';
+}
+function dedupKo(arr){
+  const map={};
+  arr.forEach(function(g){
+    const key=g.round+'|'+[canon(g.home),canon(g.away)].sort().join('|');
+    const prev=map[key];
+    const has=(g.sh!=null&&g.sa!=null)||g.advHome||g.advAway;
+    const pHas=prev&&((prev.sh!=null&&prev.sa!=null)||prev.advHome||prev.advAway);
+    if(!prev||(has&&!pHas)) map[key]=g;
+  });
+  return Object.keys(map).map(function(k){return map[k];});
+}
+function collectKO(events){
+  const arr=[];
+  events.forEach(function(ev){
+    if(!ev.strTimestamp||!ev.strHomeTeam||!ev.strAwayTeam) return;
+    const d=parseTs(ev.strTimestamp); if(!d) return;
+    const rd=koRoundByDate(d.getTime()); if(!rd) return;
+    arr.push({round:rd,home:ev.strHomeTeam,away:ev.strAwayTeam,
+      sh:(ev.intHomeScore===''||ev.intHomeScore==null)?null:ev.intHomeScore,
+      sa:(ev.intAwayScore===''||ev.intAwayScore==null)?null:ev.intAwayScore,
+      advHome:!!ev.advHome,advAway:!!ev.advAway});
+  });
+  if(arr.length){ koGames=dedupKo(koGames.concat(arr)); saveKO(); }
+}
+function computeStandings(){
+  const groups={};
+  D.games.forEach(function(g,i){
+    const grp=g.grupo; groups[grp]=groups[grp]||{}; const tb=groups[grp];
+    tb[g.a]=tb[g.a]||{t:g.a,pts:0,gf:0,ga:0,pl:0};
+    tb[g.b]=tb[g.b]||{t:g.b,pts:0,gf:0,ga:0,pl:0};
+    const r=results[i]; if(r[0]==null||r[1]==null) return;
+    const ha=+r[0],aw=+r[1];
+    tb[g.a].gf+=ha;tb[g.a].ga+=aw;tb[g.b].gf+=aw;tb[g.b].ga+=ha;tb[g.a].pl++;tb[g.b].pl++;
+    if(ha>aw)tb[g.a].pts+=3; else if(aw>ha)tb[g.b].pts+=3; else {tb[g.a].pts++;tb[g.b].pts++;}
+  });
+  const out={};
+  Object.keys(groups).forEach(function(grp){
+    const arr=Object.keys(groups[grp]).map(function(k){return groups[grp][k];});
+    arr.sort(function(a,b){return b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf||a.t.localeCompare(b.t);});
+    out[grp]={teams:arr,complete:arr.every(function(x){return x.pl>=3;})};
+  });
+  return out;
+}
+function koListByRound(){
+  const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
+  koGames.forEach(function(g){ if(by[g.round]) by[g.round].push(g); });
+  return by;
+}
+function koFindTeam(list,team){ const c=canon(team);
+  for(var i=0;i<list.length;i++){ if(canon(list[i].home)===c||canon(list[i].away)===c) return list[i]; } return null; }
+function koFindPair(list,a,b){ const ca=canon(a),cb=canon(b);
+  for(var i=0;i<list.length;i++){ var g=list[i],h=canon(g.home),w=canon(g.away);
+    if((h===ca&&w===cb)||(h===cb&&w===ca)) return g; } return null; }
+function gameOutcome(g,h,a){
+  var dh=g.sh,da=g.sa; if(canon(g.home)===canon(a)){ dh=g.sa; da=g.sh; }
+  var winner=null; if(g.advHome) winner=g.home; else if(g.advAway) winner=g.away;
+  else if(g.sh!=null&&g.sa!=null){ if(+g.sh>+g.sa) winner=g.home; else if(+g.sa>+g.sh) winner=g.away; }
+  var loser=winner?(canon(winner)===canon(g.home)?g.away:g.home):null;
+  return {sh:dh,sa:da,winner:winner,loser:loser};
+}
+function resolveBracket(){
+  const st=computeStandings(), kr=koListByRound();
+  const rkey={'32 avos':'r32','Oitavas':'r16','Quartas':'qf','Semifinais':'sf','3o lugar':'tp','Final':'fn'};
+  const T={},R={};
+  function slot(lb){ if(!lb) return null;
+    var m=lb.match(/^1o ([A-L])$/); if(m){ var g=st[m[1]]; return g&&g.complete?g.teams[0].t:null; }
+    m=lb.match(/^2o ([A-L])$/); if(m){ var g2=st[m[1]]; return g2&&g2.complete?g2.teams[1].t:null; }
+    m=lb.match(/^V(\d+)$/); if(m){ var r=R[+m[1]]; return r?r.winner:null; }
+    m=lb.match(/^Perdedor (\d+)$/); if(m){ var r2=R[+m[1]]; return r2?r2.loser:null; }
+    return null;
+  }
+  KO.forEach(function(col){
+    var rk=rkey[col.r], list=kr[rk]||[];
+    col.ms.forEach(function(g){
+      var h=slot(g.h), a=slot(g.a), isThird=/^3o /.test(g.a);
+      if(h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=canon(gm0.home)===canon(h)?gm0.away:gm0.home; } }
+      T[g.m]={h:h,a:a};
+      if(h&&a){ var gm=koFindPair(list,h,a); if(gm){ R[g.m]=gameOutcome(gm,h,a); } }
+    });
+  });
+  return {T:T,R:R};
+}
 function renderKO(){
   const wrap=document.getElementById('koWrap');
+  const res=resolveBracket();
   wrap.innerHTML = KO.map(function(col){
     const matches=col.ms.map(function(g){
-      return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'
-        + '<div class="ko-slot"><span class="nm">'+g.h+'</span><span class="sc">-</span></div>'
-        + '<div class="ko-slot"><span class="nm">'+g.a+'</span><span class="sc">-</span></div></div>';
+      const t=res.T[g.m]||{}, r=res.R[g.m]||{};
+      const hN=t.h||g.h, aN=t.a||g.a, hR=!!t.h, aR=!!t.a;
+      const sh=(r.sh!=null)?r.sh:'-', sa=(r.sa!=null)?r.sa:'-';
+      const hW=r.winner&&canon(r.winner)===canon(hN), aW=r.winner&&canon(r.winner)===canon(aN);
+      function sl(n,real,sc,win){ return '<div class="ko-slot'+(win?' win':'')+(real?'':' slotref')+'"><span class="nm">'+(real?flag(n):'')+n+'</span><span class="sc">'+sc+'</span></div>'; }
+      return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(hN,hR,sh,hW)+sl(aN,aR,sa,aW)+'</div>';
     }).join('');
     return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div>'+matches+'</div>';
   }).join('');
 }
-
 
 /* ---------- Zoom do chaveamento ---------- */
 let koZoom=1, koInit=false;
@@ -290,7 +393,7 @@ function startedMs(ev){ if(!ev.strTimestamp) return Infinity; const t=Date.parse
 async function fetchEventsClient(){
   const out=[];
   function dr(st,en){const a=[];let d=new Date(st+'T00:00:00Z');const ee=new Date(en+'T00:00:00Z');while(d<=ee){a.push(d.toISOString().slice(0,10).replace(/-/g,''));d.setUTCDate(d.getUTCDate()+1);}return a;}
-  function esp(ev){const c=ev.competitions&&ev.competitions[0];if(!c)return null;const cs=c.competitors||[];const h=cs.find(function(x){return x.homeAway==='home';}),a=cs.find(function(x){return x.homeAway==='away';});if(!h||!a)return null;const stt=c.status&&c.status.type&&c.status.type.state;const started=(stt==='in'||stt==='post');return {strHomeTeam:h.team&&(h.team.name||h.team.displayName),strAwayTeam:a.team&&(a.team.name||a.team.displayName),intHomeScore:started?h.score:null,intAwayScore:started?a.score:null,strTimestamp:ev.date};}
+  function esp(ev){const c=ev.competitions&&ev.competitions[0];if(!c)return null;const cs=c.competitors||[];const h=cs.find(function(x){return x.homeAway==='home';}),a=cs.find(function(x){return x.homeAway==='away';});if(!h||!a)return null;const stt=c.status&&c.status.type&&c.status.type.state;const started=(stt==='in'||stt==='post');return {strHomeTeam:h.team&&(h.team.name||h.team.displayName),strAwayTeam:a.team&&(a.team.name||a.team.displayName),intHomeScore:started?h.score:null,intAwayScore:started?a.score:null,advHome:!!h.winner,advAway:!!a.winner,strTimestamp:ev.date};}
   try{
     const dates=dr('2026-06-11','2026-07-20'); const CHUNK=6;
     for(let i=0;i<dates.length;i+=CHUNK){
@@ -324,6 +427,7 @@ async function fetchResults(){
     const g=D.games[i];
     if(canon(g.enA)===home){ fresh[i]=[+ha,+aw]; } else { fresh[i]=[+aw,+ha]; }
   });
+  collectKO(events);
   saveTimes(); results=fresh; applyManual(results); saveResults(); render();
   const cnt=results.filter(function(r){return r[0]!=null&&r[1]!=null;}).length;
   setStatus(cnt+' jogo(s) com resultado - atualizado '+new Date().toLocaleTimeString('pt-BR'));
