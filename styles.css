@@ -82,3 +82,18 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
 .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
 @media(max-width:520px){.team{min-width:90px;font-size:14px}.rrow{grid-template-columns:38px 1fr auto}.chartbox{height:300px}}
+
+/* ===== Mata-mata (chaveamento) ===== */
+.ko-wrap{display:flex;gap:18px;overflow-x:auto;padding:8px 2px 16px;align-items:stretch}
+.ko-col{flex:0 0 200px;display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-height:100%}
+.ko-rtitle{text-align:center;font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--accent-txt);background:var(--accent);border-radius:999px;padding:5px 0;margin-bottom:4px}
+.ko-match{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ko-mhd{font-size:10px;color:var(--muted);padding:3px 8px;background:var(--card2);border-bottom:1px solid var(--line)}
+.ko-slot{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;font-size:13px;font-weight:600;gap:8px}
+.ko-slot+.ko-slot{border-top:1px solid var(--line)}
+.ko-slot .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ko-slot .sc{font-weight:800;color:var(--muted);min-width:16px;text-align:center}
+.ko-slot.win{background:color-mix(in srgb,var(--green) 16%,transparent)}
+.ko-slot.win .nm{color:var(--green)}
+.ko-note{color:var(--muted);font-size:12px;margin:6px 2px 12px}
+@media(max-width:520px){.ko-col{flex-basis:170px}}
