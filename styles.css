@@ -89,9 +89,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
 .zbtn:hover{background:var(--card2)}
 #koZoomLbl{font-size:13px;color:var(--muted);font-weight:600;min-width:46px;text-align:center}
 .ko-wrap{display:flex;gap:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 2px 16px;align-items:stretch}
-.ko-col{flex:0 0 200px;display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-height:100%}
+.ko-col{flex:0 0 200px;display:flex;flex-direction:column;min-height:100%}
+.ko-matches{flex:1;display:flex;flex-direction:column;justify-content:space-around}
 .ko-rtitle{text-align:center;font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--accent-txt);background:var(--accent);border-radius:999px;padding:5px 0;margin-bottom:4px}
-.ko-match{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ko-match{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:5px 0}
 .ko-mhd{font-size:10px;color:var(--muted);padding:3px 8px;background:var(--card2);border-bottom:1px solid var(--line)}
 .ko-slot{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;font-size:13px;font-weight:600;gap:8px}
 .ko-slot+.ko-slot{border-top:1px solid var(--line)}
@@ -102,3 +103,5 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
 .ko-slot.slotref .nm{color:var(--muted);font-weight:600}
 .ko-note{color:var(--muted);font-size:12px;margin:6px 2px 12px}
 @media(max-width:520px){.ko-col{flex-basis:150px}.zbtn{padding:8px 14px;font-size:16px}}
+
+.fl{width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:5px;box-shadow:0 0 0 1px rgba(0,0,0,.18);object-fit:cover}

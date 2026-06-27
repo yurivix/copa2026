@@ -201,10 +201,10 @@ const KO=[
  {r:'3o lugar', ms:[ {m:103,h:'Perdedor 101',a:'Perdedor 102'} ]},
  {r:'Final', ms:[ {m:104,h:'V101',a:'V102'} ]}
 ];
-const EMOJI={"México": "🇲🇽", "África do Sul": "🇿🇦", "Coreia do Sul": "🇰🇷", "Chéquia": "🇨🇿", "Canadá": "🇨🇦", "Bósnia e Herzegovina": "🇧🇦", "Estados Unidos": "🇺🇸", "Paraguai": "🇵🇾", "Austrália": "🇦🇺", "Turquia": "🇹🇷", "Catar": "🇶🇦", "Suíça": "🇨🇭", "Brasil": "🇧🇷", "Marrocos": "🇲🇦", "Haiti": "🇭🇹", "Escócia": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Alemanha": "🇩🇪", "Curaçao": "🇨🇼", "Holanda": "🇳🇱", "Japão": "🇯🇵", "Costa do Marfim": "🇨🇮", "Equador": "🇪🇨", "Suécia": "🇸🇪", "Tunísia": "🇹🇳", "Espanha": "🇪🇸", "Cabo Verde": "🇨🇻", "Bélgica": "🇧🇪", "Egito": "🇪🇬", "Arábia Saudita": "🇸🇦", "Uruguai": "🇺🇾", "Irã": "🇮🇷", "Nova Zelândia": "🇳🇿", "França": "🇫🇷", "Senegal": "🇸🇳", "Iraque": "🇮🇶", "Noruega": "🇳🇴", "Argentina": "🇦🇷", "Argélia": "🇩🇿", "Áustria": "🇦🇹", "Jordânia": "🇯🇴", "Portugal": "🇵🇹", "Congo DR": "🇨🇩", "Uzbequistão": "🇺🇿", "Colômbia": "🇨🇴", "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Croácia": "🇭🇷", "Gana": "🇬🇭", "Panamá": "🇵🇦"};
+const FLAGCODE={"México": "mx", "África do Sul": "za", "Coreia do Sul": "kr", "Chéquia": "cz", "Canadá": "ca", "Bósnia e Herzegovina": "ba", "Estados Unidos": "us", "Paraguai": "py", "Austrália": "au", "Turquia": "tr", "Catar": "qa", "Suíça": "ch", "Brasil": "br", "Marrocos": "ma", "Haiti": "ht", "Escócia": "gb-sct", "Alemanha": "de", "Curaçao": "cw", "Holanda": "nl", "Japão": "jp", "Costa do Marfim": "ci", "Equador": "ec", "Suécia": "se", "Tunísia": "tn", "Espanha": "es", "Cabo Verde": "cv", "Bélgica": "be", "Egito": "eg", "Arábia Saudita": "sa", "Uruguai": "uy", "Irã": "ir", "Nova Zelândia": "nz", "França": "fr", "Senegal": "sn", "Iraque": "iq", "Noruega": "no", "Argentina": "ar", "Argélia": "dz", "Áustria": "at", "Jordânia": "jo", "Portugal": "pt", "Congo DR": "cd", "Uzbequistão": "uz", "Colômbia": "co", "Inglaterra": "gb-eng", "Croácia": "hr", "Gana": "gh", "Panamá": "pa"};
 let FLAG=null;
-function buildFlags(){ FLAG={}; Object.keys(EMOJI).forEach(function(pt){ var e=EMOJI[pt]; FLAG[canon(pt)]=e; var en=(D.pt2en&&D.pt2en[pt]); if(en) FLAG[canon(en)]=e; }); }
-function flag(name){ if(!FLAG) buildFlags(); var e=FLAG[canon(name)]; return e?e+' ':''; }
+function buildFlags(){ FLAG={}; Object.keys(FLAGCODE).forEach(function(pt){ var c=FLAGCODE[pt]; FLAG[canon(pt)]=c; var en=(D.pt2en&&D.pt2en[pt]); if(en) FLAG[canon(en)]=c; }); }
+function flag(name){ if(!FLAG) buildFlags(); var c=FLAG[canon(name)]; return c?'<img class="fl" src="https://flagcdn.com/20x15/'+c+'.png" srcset="https://flagcdn.com/40x30/'+c+'.png 2x" width="20" height="15" alt="" loading="lazy"> ':''; }
 
 function koRoundByDate(ms){
   const s=new Date(ms).toISOString().slice(0,10);
@@ -310,7 +310,7 @@ function renderKO(){
       function sl(n,real,sc,win){ return '<div class="ko-slot'+(win?' win':'')+(real?'':' slotref')+'"><span class="nm">'+(real?flag(n):'')+n+'</span><span class="sc">'+sc+'</span></div>'; }
       return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(hN,hR,sh,hW)+sl(aN,aR,sa,aW)+'</div>';
     }).join('');
-    return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div>'+matches+'</div>';
+    return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div><div class="ko-matches">'+matches+'</div></div>';
   }).join('');
 }
 
