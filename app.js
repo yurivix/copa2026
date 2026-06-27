@@ -210,7 +210,19 @@ function renderKO(){
   }).join('');
 }
 
-function render(){ renderRank(); renderChart(); if(view==='games') renderGames(); if(view==='ko') renderKO(); }
+
+/* ---------- Zoom do chaveamento ---------- */
+let koZoom=1, koInit=false;
+function applyKoZoom(){ const w=document.getElementById('koWrap'); if(w) w.style.zoom=koZoom; const l=document.getElementById('koZoomLbl'); if(l) l.textContent=Math.round(koZoom*100)+'%'; }
+function koFit(){ const w=document.getElementById('koWrap'); if(!w) return; w.style.zoom=1; const cw=w.clientWidth, sw=w.scrollWidth; koZoom = sw>cw+2 ? Math.max(0.4, Math.floor((cw/sw)*100)/100) : 1; applyKoZoom(); }
+(function initKoZoom(){
+  const i=document.getElementById('koZoomIn'), o=document.getElementById('koZoomOut'), fit=document.getElementById('koZoomFit');
+  if(i) i.addEventListener('click',function(){ koZoom=Math.min(2.5,Math.round((koZoom+0.1)*10)/10); applyKoZoom(); });
+  if(o) o.addEventListener('click',function(){ koZoom=Math.max(0.4,Math.round((koZoom-0.1)*10)/10); applyKoZoom(); });
+  if(fit) fit.addEventListener('click',koFit);
+})();
+
+function render(){ renderRank(); renderChart(); if(view==='games') renderGames(); if(view==='ko'){ renderKO(); if(!koInit){ koInit=true; if(window.innerWidth<700){ koFit(); } else { applyKoZoom(); } } else { applyKoZoom(); } } }
 
 /* ---------- Abas ---------- */
 document.querySelectorAll('.tab').forEach(function(t){
