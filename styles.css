@@ -105,3 +105,5 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 12px}
 @media(max-width:520px){.ko-col{flex-basis:150px}.zbtn{padding:8px 14px;font-size:16px}}
 
 .fl{width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:5px;box-shadow:0 0 0 1px rgba(0,0,0,.18);object-fit:cover}
+
+.ko-trophy{display:block;width:72px;height:auto;margin:0 auto 6px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}

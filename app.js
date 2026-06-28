@@ -341,7 +341,10 @@ function renderKO(){
       function sl(n,real,sc,win){ return '<div class="ko-slot'+(win?' win':'')+(real?'':' slotref')+'"><span class="nm">'+(real?flag(n):'')+n+'</span><span class="sc">'+sc+'</span></div>'; }
       return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(hN,hR,sh,hW)+sl(aN,aR,sa,aW)+'</div>';
     }).join('');
-    return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div><div class="ko-matches">'+matches+'</div></div>';
+    var isFinal = col.r==='Final';
+    var trophy = isFinal ? '<img class="ko-trophy" src="https://r2.thesportsdb.com/images/media/league/trophy/mmyv4f1724782185.png" alt="Taca da Copa" loading="lazy">' : '';
+    var mstyle = isFinal ? ' style="justify-content:center;gap:10px"' : '';
+    return '<div class="ko-col"><div class="ko-rtitle">'+col.r+'</div><div class="ko-matches"'+mstyle+'>'+trophy+matches+'</div></div>';
   }).join('');
 }
 
