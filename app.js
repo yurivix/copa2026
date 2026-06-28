@@ -159,6 +159,39 @@ function renderChart(){
 
 /* ---------- Jogos ---------- */
 function gameState(i){ const r=results[i]; return (r[0]!=null&&r[1]!=null)?'played':'pending'; }
+function renderKOGames(stt){
+  if(typeof resolveBracket!=='function') return '';
+  const res=resolveBracket(); const koReal=koRealScores();
+  const rname={}; KO.forEach(function(col){ col.ms.forEach(function(g){ rname[g.m]=col.r; }); });
+  let cards='';
+  KO.forEach(function(col){
+    col.ms.forEach(function(g){
+      const t=res.T[g.m]; if(!t||!t.h||!t.a) return;
+      const real=koReal[g.m]; const played=!!(real&&real[0]!=null&&real[1]!=null);
+      if(stt==='played'&&!played) return;
+      if(stt==='pending'&&played) return;
+      const sa=played?real[0]:'-', sb=played?real[1]:'-';
+      const picksHtml=D.participants.map(function(p){
+        const pk=p.ko&&p.ko[g.m];
+        if(!pk||pk[0]==null||pk[1]==null) return '';
+        const sc=played?scoreFor(real,pk):null;
+        const cls=sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
+        const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'var(--red)')+';color:#fff">+'+sc+'</span>':'';
+        return '<div class="pchip '+cls+'"><span class="nm">'+p.name+'</span><span class="sc">'+pk[0]+'-'+pk[1]+tag+'</span></div>';
+      }).join('');
+      cards+='<div class="game">'
+        +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'
+        +'<span class="badge" style="background:var(--card2);color:var(--muted)">'+(played?'ENCERRADO':'A JOGAR')+'</span></div>'
+        +'<div class="gmain"><div class="team a">'+flag(t.h)+t.h+'</div>'
+        +'<div class="score"><div class="scorebox '+(played?'':'empty')+'">'+sa+'</div>'
+        +'<span class="vs">x</span><div class="scorebox '+(played?'':'empty')+'">'+sb+'</div></div>'
+        +'<div class="team b">'+flag(t.a)+t.a+'</div></div>'
+        +'<div class="picks"><h4>Palpites da galera</h4>'
+        +'<div class="pgrid">'+(picksHtml||'<div class="empty">Palpites do mata-mata entram quando enviados.</div>')+'</div></div></div>';
+    });
+  });
+  return cards ? '<div class="secdiv">Mata-mata</div>'+cards : '';
+}
 function renderGames(){
   const grp=document.getElementById('filterGroup').value;
   const stt=document.getElementById('filterState').value;
@@ -189,8 +222,11 @@ function renderGames(){
       + '<div class="picks"><h4>Palpites da galera</h4>'
       + '<div class="pgrid">'+(picksHtml||'<div class="empty">Sem palpites.</div>')+'</div></div></div>';
   });
+  const koHtml = grp ? '' : renderKOGames(stt);
+  let body = koHtml;
+  if(html) body += (koHtml?'<div class="secdiv">Fase de grupos</div>':'') + html;
   const el=document.getElementById('gamesList');
-  el.innerHTML=html||'<div class="empty" style="text-align:center;padding:30px">Nenhum jogo com esse filtro.</div>';
+  el.innerHTML = body || '<div class="empty" style="text-align:center;padding:30px">Nenhum jogo com esse filtro.</div>';
 }
 
 
