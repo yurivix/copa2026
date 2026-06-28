@@ -215,6 +215,16 @@ const KO=[
    So preencher quando o placar final (com prorrogacao) for diferente do de 90 min.
    Ex.: KO90={ '101':[1,1] }  (semifinal jogo 101 estava 1x1 nos 90 min) */
 const KO90={};
+
+/* Confrontos REAIS dos 32 avos (definidos na fase de grupos). Jogo -> [mandante, visitante].
+   Quando o sistema nao consegue resolver sozinho (ex.: 3os colocados), usa daqui. */
+const KO_TEAMS={
+ 73:['África do Sul','Canadá'],74:['Alemanha','Paraguai'],75:['Holanda','Marrocos'],76:['Brasil','Japão'],
+ 77:['França','Suécia'],78:['Costa do Marfim','Noruega'],79:['México','Equador'],80:['Inglaterra','Congo DR'],
+ 81:['Estados Unidos','Bósnia e Herzegovina'],82:['Bélgica','Senegal'],83:['Colômbia','Gana'],84:['Espanha','Áustria'],
+ 85:['Suíça','Argélia'],86:['Argentina','Cabo Verde'],87:['Portugal','Croácia'],88:['Austrália','Egito']
+};
+
 const FLAGCODE={"México": "mx", "África do Sul": "za", "Coreia do Sul": "kr", "Chéquia": "cz", "Canadá": "ca", "Bósnia e Herzegovina": "ba", "Estados Unidos": "us", "Paraguai": "py", "Austrália": "au", "Turquia": "tr", "Catar": "qa", "Suíça": "ch", "Brasil": "br", "Marrocos": "ma", "Haiti": "ht", "Escócia": "gb-sct", "Alemanha": "de", "Curaçao": "cw", "Holanda": "nl", "Japão": "jp", "Costa do Marfim": "ci", "Equador": "ec", "Suécia": "se", "Tunísia": "tn", "Espanha": "es", "Cabo Verde": "cv", "Bélgica": "be", "Egito": "eg", "Arábia Saudita": "sa", "Uruguai": "uy", "Irã": "ir", "Nova Zelândia": "nz", "França": "fr", "Senegal": "sn", "Iraque": "iq", "Noruega": "no", "Argentina": "ar", "Argélia": "dz", "Áustria": "at", "Jordânia": "jo", "Portugal": "pt", "Congo DR": "cd", "Uzbequistão": "uz", "Colômbia": "co", "Inglaterra": "gb-eng", "Croácia": "hr", "Gana": "gh", "Panamá": "pa"};
 let FLAG=null;
 function buildFlags(){ FLAG={}; Object.keys(FLAGCODE).forEach(function(pt){ var c=FLAGCODE[pt]; FLAG[canon(pt)]=c; var en=(D.pt2en&&D.pt2en[pt]); if(en) FLAG[canon(en)]=c; }); }
@@ -304,8 +314,9 @@ function resolveBracket(){
   KO.forEach(function(col){
     var rk=rkey[col.r], list=kr[rk]||[];
     col.ms.forEach(function(g){
-      var h=slot(g.h), a=slot(g.a), isThird=/^3o /.test(g.a);
-      if(h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=canon(gm0.home)===canon(h)?gm0.away:gm0.home; } }
+      var ov=KO_TEAMS[g.m];
+      var h=ov?ov[0]:slot(g.h), a=ov?ov[1]:slot(g.a);
+      if(!ov && h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=canon(gm0.home)===canon(h)?gm0.away:gm0.home; } }
       T[g.m]={h:h,a:a};
       if(h&&a){ var gm=koFindPair(list,h,a); if(gm){ R[g.m]=gameOutcome(gm,h,a); } }
     });
