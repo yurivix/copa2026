@@ -179,8 +179,9 @@ function renderKOGames(stt){
         const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'var(--red)')+';color:#fff">+'+sc+'</span>':'';
         return '<div class="pchip '+cls+'"><span class="nm">'+p.name+'</span><span class="sc">'+pk[0]+'-'+pk[1]+tag+'</span></div>';
       }).join('');
+      var dts=fmtKO(KO_DATES[g.m]);
       cards+='<div class="game">'
-        +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'
+        +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'+(dts?'<span>'+dts+'</span>':'')
         +'<span class="badge" style="background:var(--card2);color:var(--muted)">'+(played?'ENCERRADO':'A JOGAR')+'</span></div>'
         +'<div class="gmain"><div class="team a">'+flag(t.h)+t.h+'</div>'
         +'<div class="score"><div class="scorebox '+(played?'':'empty')+'">'+sa+'</div>'
@@ -260,6 +261,16 @@ const KO_TEAMS={
  81:['Estados Unidos','Bósnia e Herzegovina'],82:['Bélgica','Senegal'],83:['Colômbia','Gana'],84:['Espanha','Áustria'],
  85:['Suíça','Argélia'],86:['Argentina','Cabo Verde'],87:['Portugal','Croácia'],88:['Austrália','Egito']
 };
+
+/* Data/hora (UTC) dos jogos do mata-mata. R32 definidos; demais fases entram pela API. */
+const KO_DATES={
+ 73:'2026-06-28T19:00:00Z',74:'2026-06-29T20:30:00Z',75:'2026-06-30T01:00:00Z',76:'2026-06-29T17:00:00Z',
+ 77:'2026-06-30T21:00:00Z',78:'2026-06-30T17:00:00Z',79:'2026-07-01T01:00:00Z',80:'2026-07-01T16:00:00Z',
+ 81:'2026-07-02T00:00:00Z',82:'2026-07-01T20:00:00Z',83:'2026-07-02T23:00:00Z',84:'2026-07-02T19:00:00Z',
+ 85:'2026-07-03T03:00:00Z',86:'2026-07-03T22:00:00Z',87:'2026-07-04T01:30:00Z',88:'2026-07-03T18:00:00Z'
+};
+function fmtKO(ts){ var d=parseTs(ts); if(!d) return ''; return 'BRT '+fmtTZ(d,'America/Sao_Paulo')+' &middot; UTC '+fmtTZ(d,'UTC'); }
+
 
 const FLAGCODE={"México": "mx", "África do Sul": "za", "Coreia do Sul": "kr", "Chéquia": "cz", "Canadá": "ca", "Bósnia e Herzegovina": "ba", "Estados Unidos": "us", "Paraguai": "py", "Austrália": "au", "Turquia": "tr", "Catar": "qa", "Suíça": "ch", "Brasil": "br", "Marrocos": "ma", "Haiti": "ht", "Escócia": "gb-sct", "Alemanha": "de", "Curaçao": "cw", "Holanda": "nl", "Japão": "jp", "Costa do Marfim": "ci", "Equador": "ec", "Suécia": "se", "Tunísia": "tn", "Espanha": "es", "Cabo Verde": "cv", "Bélgica": "be", "Egito": "eg", "Arábia Saudita": "sa", "Uruguai": "uy", "Irã": "ir", "Nova Zelândia": "nz", "França": "fr", "Senegal": "sn", "Iraque": "iq", "Noruega": "no", "Argentina": "ar", "Argélia": "dz", "Áustria": "at", "Jordânia": "jo", "Portugal": "pt", "Congo DR": "cd", "Uzbequistão": "uz", "Colômbia": "co", "Inglaterra": "gb-eng", "Croácia": "hr", "Gana": "gh", "Panamá": "pa"};
 let FLAG=null;
