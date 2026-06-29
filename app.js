@@ -330,18 +330,24 @@ function computeStandings(){
   });
   return out;
 }
+/* chave unificada de time: trata PT e EN (ex.: "África do Sul" == "South Africa") */
+var _pt2enc=null;
+function tkey(name){ if(!_pt2enc){ _pt2enc={}; if(D.pt2en) Object.keys(D.pt2en).forEach(function(pt){ _pt2enc[canon(pt)]=canon(D.pt2en[pt]); }); } var c=canon(name); return _pt2enc[c]||c; }
+/* Resultados MANUAIS do mata-mata (placar 90 min). Jogo -> [golsMandante, golsVisitante, (opcional) quemAvanca].
+   Use quando a API nao traz o jogo. Ex.: KO_RESULTS={ 73:[1,2], 85:[1,1,'Suíça'] } */
+const KO_RESULTS={};
 function koListByRound(){
   const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
   koGames.forEach(function(g){ if(by[g.round]) by[g.round].push(g); });
   return by;
 }
-function koFindTeam(list,team){ const c=canon(team);
-  for(var i=0;i<list.length;i++){ if(canon(list[i].home)===c||canon(list[i].away)===c) return list[i]; } return null; }
-function koFindPair(list,a,b){ const ca=canon(a),cb=canon(b);
-  for(var i=0;i<list.length;i++){ var g=list[i],h=canon(g.home),w=canon(g.away);
+function koFindTeam(list,team){ const c=tkey(team);
+  for(var i=0;i<list.length;i++){ if(tkey(list[i].home)===c||tkey(list[i].away)===c) return list[i]; } return null; }
+function koFindPair(list,a,b){ const ca=tkey(a),cb=tkey(b);
+  for(var i=0;i<list.length;i++){ var g=list[i],h=tkey(g.home),w=tkey(g.away);
     if((h===ca&&w===cb)||(h===cb&&w===ca)) return g; } return null; }
 function gameOutcome(g,h,a){
-  var dh=g.sh,da=g.sa; if(canon(g.home)===canon(a)){ dh=g.sa; da=g.sh; }
+  var dh=g.sh,da=g.sa; if(tkey(g.home)===tkey(a)){ dh=g.sa; da=g.sh; }
   var winner=null; if(g.advHome) winner=g.home; else if(g.advAway) winner=g.away;
   else if(g.sh!=null&&g.sa!=null){ if(+g.sh>+g.sa) winner=g.home; else if(+g.sa>+g.sh) winner=g.away; }
   var loser=winner?(canon(winner)===canon(g.home)?g.away:g.home):null;
@@ -363,9 +369,16 @@ function resolveBracket(){
     col.ms.forEach(function(g){
       var ov=KO_TEAMS[g.m];
       var h=ov?ov[0]:slot(g.h), a=ov?ov[1]:slot(g.a);
-      if(!ov && h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=canon(gm0.home)===canon(h)?gm0.away:gm0.home; } }
+      if(!ov && h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=tkey(gm0.home)===tkey(h)?gm0.away:gm0.home; } }
       T[g.m]={h:h,a:a};
       if(h&&a){ var gm=koFindPair(list,h,a); if(gm){ R[g.m]=gameOutcome(gm,h,a); } }
+      var mr=KO_RESULTS[g.m];
+      if(mr && !R[g.m] && h && a){
+        var msh=mr[0], msa=mr[1], win=null, los=null;
+        if(mr[2]){ win=(tkey(mr[2])===tkey(a)?a:h); los=(win===h?a:h); }
+        else if(msh>msa){ win=h; los=a; } else if(msa>msh){ win=a; los=h; }
+        R[g.m]={sh:msh, sa:msa, winner:win, loser:los};
+      }
     });
   });
   return {T:T,R:R};
