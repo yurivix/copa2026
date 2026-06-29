@@ -183,10 +183,10 @@ function renderKOGames(stt){
       cards+='<div class="game">'
         +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'+(dts?'<span>'+dts+'</span>':'')
         +'<span class="badge" style="background:var(--card2);color:var(--muted)">'+(played?'ENCERRADO':'A JOGAR')+'</span></div>'
-        +'<div class="gmain"><div class="team a">'+flag(t.h)+t.h+'</div>'
+        +'<div class="gmain"><div class="team a">'+flag(t.h)+ptName(t.h)+'</div>'
         +'<div class="score"><div class="scorebox '+(played?'':'empty')+'">'+sa+'</div>'
         +'<span class="vs">x</span><div class="scorebox '+(played?'':'empty')+'">'+sb+'</div></div>'
-        +'<div class="team b">'+flag(t.a)+t.a+'</div></div>'
+        +'<div class="team b">'+flag(t.a)+ptName(t.a)+'</div></div>'
         +'<div class="picks"><h4>Palpites da galera</h4>'
         +'<div class="pgrid">'+(picksHtml||'<div class="empty">Palpites do mata-mata entram quando enviados.</div>')+'</div></div></div>';
     });
@@ -234,14 +234,20 @@ function renderGames(){
 /* ---------- Mata-mata (chaveamento) ---------- */
 const KO=[
  {r:'32 avos', ms:[
-   {m:73,h:'2o A',a:'2o B'},{m:74,h:'1o E',a:'3o A/B/C/D/F'},{m:75,h:'1o F',a:'2o C'},{m:76,h:'1o C',a:'2o F'},
-   {m:77,h:'1o I',a:'3o C/D/F/G/H'},{m:78,h:'2o E',a:'2o I'},{m:79,h:'1o A',a:'3o C/E/F/H/I'},{m:80,h:'1o L',a:'3o E/H/I/J/K'},
-   {m:81,h:'1o D',a:'3o B/E/F/I/J'},{m:82,h:'1o G',a:'3o A/E/H/I/J'},{m:83,h:'2o K',a:'2o L'},{m:84,h:'1o H',a:'2o J'},
-   {m:85,h:'1o B',a:'3o E/F/G/I/J'},{m:86,h:'1o J',a:'2o H'},{m:87,h:'1o K',a:'3o D/E/I/J/L'},{m:88,h:'2o D',a:'2o G'}
+   {m:74,h:'1o E',a:'3o A/B/C/D/F'},{m:77,h:'1o I',a:'3o C/D/F/G/H'},
+   {m:73,h:'2o A',a:'2o B'},{m:75,h:'1o F',a:'2o C'},
+   {m:83,h:'2o K',a:'2o L'},{m:84,h:'1o H',a:'2o J'},
+   {m:81,h:'1o D',a:'3o B/E/F/I/J'},{m:82,h:'1o G',a:'3o A/E/H/I/J'},
+   {m:76,h:'1o C',a:'2o F'},{m:78,h:'2o E',a:'2o I'},
+   {m:79,h:'1o A',a:'3o C/E/F/H/I'},{m:80,h:'1o L',a:'3o E/H/I/J/K'},
+   {m:86,h:'1o J',a:'2o H'},{m:88,h:'2o D',a:'2o G'},
+   {m:85,h:'1o B',a:'3o E/F/G/I/J'},{m:87,h:'1o K',a:'3o D/E/I/J/L'}
  ]},
  {r:'Oitavas', ms:[
-   {m:89,h:'V74',a:'V77'},{m:90,h:'V73',a:'V75'},{m:91,h:'V76',a:'V78'},{m:92,h:'V79',a:'V80'},
-   {m:93,h:'V83',a:'V84'},{m:94,h:'V81',a:'V82'},{m:95,h:'V86',a:'V88'},{m:96,h:'V85',a:'V87'}
+   {m:89,h:'V74',a:'V77'},{m:90,h:'V73',a:'V75'},
+   {m:93,h:'V83',a:'V84'},{m:94,h:'V81',a:'V82'},
+   {m:91,h:'V76',a:'V78'},{m:92,h:'V79',a:'V80'},
+   {m:95,h:'V86',a:'V88'},{m:96,h:'V85',a:'V87'}
  ]},
  {r:'Quartas', ms:[ {m:97,h:'V89',a:'V90'},{m:98,h:'V93',a:'V94'},{m:99,h:'V91',a:'V92'},{m:100,h:'V95',a:'V96'} ]},
  {r:'Semifinais', ms:[ {m:101,h:'V97',a:'V98'},{m:102,h:'V99',a:'V100'} ]},
@@ -333,6 +339,8 @@ function computeStandings(){
 /* chave unificada de time: trata PT e EN (ex.: "África do Sul" == "South Africa") */
 var _pt2enc=null;
 function tkey(name){ if(!_pt2enc){ _pt2enc={}; if(D.pt2en) Object.keys(D.pt2en).forEach(function(pt){ _pt2enc[canon(pt)]=canon(D.pt2en[pt]); }); } var c=canon(name); return _pt2enc[c]||c; }
+var _en2pt=null;
+function ptName(name){ if(!_en2pt){ _en2pt={}; if(D.pt2en) Object.keys(D.pt2en).forEach(function(pt){ _en2pt[canon(D.pt2en[pt])]=pt; }); } if(!name) return name; var k=tkey(name); return _en2pt[k]||name; }
 /* Resultados MANUAIS do mata-mata (placar 90 min). Jogo -> [golsMandante, golsVisitante, (opcional) quemAvanca].
    Use quando a API nao traz o jogo. Ex.: KO_RESULTS={ 73:[1,2], 85:[1,1,'Suíça'] } */
 const KO_RESULTS={};
@@ -369,7 +377,7 @@ function resolveBracket(){
     col.ms.forEach(function(g){
       var ov=KO_TEAMS[g.m];
       var h=ov?ov[0]:slot(g.h), a=ov?ov[1]:slot(g.a);
-      if(!ov && h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=tkey(gm0.home)===tkey(h)?gm0.away:gm0.home; } }
+      if(!ov && rk==='r32' && h&&!a){ var gm0=koFindTeam(list,h); if(gm0){ a=tkey(gm0.home)===tkey(h)?gm0.away:gm0.home; } }
       T[g.m]={h:h,a:a};
       if(h&&a){ var gm=koFindPair(list,h,a); if(gm){ R[g.m]=gameOutcome(gm,h,a); } }
       var mr=KO_RESULTS[g.m];
@@ -399,7 +407,7 @@ function renderKO(){
       const sh=(r.sh!=null)?r.sh:'-', sa=(r.sa!=null)?r.sa:'-';
       const hW=r.winner&&tkey(r.winner)===tkey(hN), aW=r.winner&&tkey(r.winner)===tkey(aN);
       function sl(n,real,sc,win){ return '<div class="ko-slot'+(win?' win':'')+(real?'':' slotref')+'"><span class="nm">'+(real?flag(n):'')+n+'</span><span class="sc">'+sc+'</span></div>'; }
-      return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(hN,hR,sh,hW)+sl(aN,aR,sa,aW)+'</div>';
+      return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(ptName(hN),hR,sh,hW)+sl(ptName(aN),aR,sa,aW)+'</div>';
     }).join('');
     var isFinal = col.r==='Final';
     var trophy = isFinal ? '<img class="ko-trophy" src="https://r2.thesportsdb.com/images/media/league/trophy/mmyv4f1724782185.png" alt="Taca da Copa" loading="lazy">' : '';
