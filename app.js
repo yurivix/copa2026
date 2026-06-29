@@ -397,7 +397,7 @@ function renderKO(){
       const t=res.T[g.m]||{}, r=res.R[g.m]||{};
       const hN=t.h||g.h, aN=t.a||g.a, hR=!!t.h, aR=!!t.a;
       const sh=(r.sh!=null)?r.sh:'-', sa=(r.sa!=null)?r.sa:'-';
-      const hW=r.winner&&canon(r.winner)===canon(hN), aW=r.winner&&canon(r.winner)===canon(aN);
+      const hW=r.winner&&tkey(r.winner)===tkey(hN), aW=r.winner&&tkey(r.winner)===tkey(aN);
       function sl(n,real,sc,win){ return '<div class="ko-slot'+(win?' win':'')+(real?'':' slotref')+'"><span class="nm">'+(real?flag(n):'')+n+'</span><span class="sc">'+sc+'</span></div>'; }
       return '<div class="ko-match"><div class="ko-mhd">Jogo '+g.m+'</div>'+sl(hN,hR,sh,hW)+sl(aN,aR,sa,aW)+'</div>';
     }).join('');
