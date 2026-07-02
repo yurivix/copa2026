@@ -257,7 +257,7 @@ const KO=[
 /* Placar de 90 MINUTOS para jogos que foram a prorrogacao/penaltis.
    So preencher quando o placar final (com prorrogacao) for diferente do de 90 min.
    Ex.: KO90={ '101':[1,1] }  (semifinal jogo 101 estava 1x1 nos 90 min) */
-const KO90={};
+const KO90={ 82:[2,2] };  /* Belgica x Senegal: 2x2 nos 90 min (3x2 na prorrogacao) */
 
 /* Confrontos REAIS dos 32 avos (definidos na fase de grupos). Jogo -> [mandante, visitante].
    Quando o sistema nao consegue resolver sozinho (ex.: 3os colocados), usa daqui. */
@@ -387,6 +387,7 @@ function resolveBracket(){
         else if(msh>msa){ win=h; los=a; } else if(msa>msh){ win=a; los=h; }
         R[g.m]={sh:msh, sa:msa, winner:win, loser:los};
       }
+      if(KO90[g.m] && R[g.m]){ R[g.m]=Object.assign({}, R[g.m], {sh:KO90[g.m][0], sa:KO90[g.m][1]}); } // placar 90 min na chave
     });
   });
   return {T:T,R:R};
