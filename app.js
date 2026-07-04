@@ -257,7 +257,7 @@ const KO=[
 /* Placar de 90 MINUTOS para jogos que foram a prorrogacao/penaltis.
    So preencher quando o placar final (com prorrogacao) for diferente do de 90 min.
    Ex.: KO90={ '101':[1,1] }  (semifinal jogo 101 estava 1x1 nos 90 min) */
-const KO90={ 82:[2,2] };  /* Belgica x Senegal: 2x2 nos 90 min (3x2 na prorrogacao) */
+const KO90={};
 
 /* Confrontos REAIS dos 32 avos (definidos na fase de grupos). Jogo -> [mandante, visitante].
    Quando o sistema nao consegue resolver sozinho (ex.: 3os colocados), usa daqui. */
@@ -265,7 +265,9 @@ const KO_TEAMS={
  73:['África do Sul','Canadá'],74:['Alemanha','Paraguai'],75:['Holanda','Marrocos'],76:['Brasil','Japão'],
  77:['França','Suécia'],78:['Costa do Marfim','Noruega'],79:['México','Equador'],80:['Inglaterra','Congo DR'],
  81:['Estados Unidos','Bósnia e Herzegovina'],82:['Bélgica','Senegal'],83:['Colômbia','Gana'],84:['Espanha','Áustria'],
- 85:['Suíça','Argélia'],86:['Argentina','Cabo Verde'],87:['Portugal','Croácia'],88:['Austrália','Egito']
+ 85:['Suíça','Argélia'],86:['Argentina','Cabo Verde'],87:['Portugal','Croácia'],88:['Austrália','Egito'],
+ 89:['Paraguai','França'],90:['Canadá','Marrocos'],91:['Brasil','Noruega'],92:['México','Inglaterra'],
+ 93:['Portugal','Espanha'],94:['Estados Unidos','Bélgica'],95:['Argentina','Egito'],96:['Suíça','Colômbia']
 };
 
 /* Data/hora (UTC) dos jogos do mata-mata. R32 definidos; demais fases entram pela API. */
@@ -273,7 +275,9 @@ const KO_DATES={
  73:'2026-06-28T19:00:00Z',74:'2026-06-29T20:30:00Z',75:'2026-06-30T01:00:00Z',76:'2026-06-29T17:00:00Z',
  77:'2026-06-30T21:00:00Z',78:'2026-06-30T17:00:00Z',79:'2026-07-01T01:00:00Z',80:'2026-07-01T16:00:00Z',
  81:'2026-07-02T00:00:00Z',82:'2026-07-01T20:00:00Z',83:'2026-07-02T23:00:00Z',84:'2026-07-02T19:00:00Z',
- 85:'2026-07-03T03:00:00Z',86:'2026-07-03T22:00:00Z',87:'2026-07-04T01:30:00Z',88:'2026-07-03T18:00:00Z'
+ 85:'2026-07-03T03:00:00Z',86:'2026-07-03T22:00:00Z',87:'2026-07-04T01:30:00Z',88:'2026-07-03T18:00:00Z',
+ 89:'2026-07-04T21:00:00Z',90:'2026-07-04T17:00:00Z',91:'2026-07-05T20:00:00Z',92:'2026-07-06T00:00:00Z',
+ 93:'2026-07-06T19:00:00Z',94:'2026-07-07T00:00:00Z',95:'2026-07-07T16:00:00Z',96:'2026-07-07T20:00:00Z'
 };
 function fmtKO(ts){ var d=parseTs(ts); if(!d) return ''; return 'BRT '+fmtTZ(d,'America/Sao_Paulo')+' &middot; UTC '+fmtTZ(d,'UTC'); }
 
@@ -343,7 +347,12 @@ var _en2pt=null;
 function ptName(name){ if(!_en2pt){ _en2pt={}; if(D.pt2en) Object.keys(D.pt2en).forEach(function(pt){ _en2pt[canon(D.pt2en[pt])]=pt; }); } if(!name) return name; var k=tkey(name); return _en2pt[k]||name; }
 /* Resultados MANUAIS do mata-mata (placar 90 min). Jogo -> [golsMandante, golsVisitante, (opcional) quemAvanca].
    Use quando a API nao traz o jogo. Ex.: KO_RESULTS={ 73:[1,2], 85:[1,1,'Suíça'] } */
-const KO_RESULTS={};
+const KO_RESULTS={
+ 73:[0,1], 74:[1,1,'Paraguai'], 75:[1,1,'Marrocos'], 76:[2,1],
+ 77:[3,0], 78:[1,2], 79:[2,0], 80:[2,1],
+ 81:[2,0], 82:[2,2,'Bélgica'], 83:[1,0], 84:[3,0],
+ 85:[2,0], 86:[3,2], 87:[2,1], 88:[1,1,'Egito']
+};
 function koListByRound(){
   const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
   koGames.forEach(function(g){ if(by[g.round]) by[g.round].push(g); });
@@ -381,7 +390,7 @@ function resolveBracket(){
       T[g.m]={h:h,a:a};
       if(h&&a){ var gm=koFindPair(list,h,a); if(gm){ R[g.m]=gameOutcome(gm,h,a); } }
       var mr=KO_RESULTS[g.m];
-      if(mr && !R[g.m] && h && a){
+      if(mr && h && a){
         var msh=mr[0], msa=mr[1], win=null, los=null;
         if(mr[2]){ win=(tkey(mr[2])===tkey(a)?a:h); los=(win===h?a:h); }
         else if(msh>msa){ win=h; los=a; } else if(msa>msh){ win=a; los=h; }
