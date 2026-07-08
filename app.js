@@ -171,14 +171,28 @@ function renderKOGames(stt){
       if(stt==='played'&&!played) return;
       if(stt==='pending'&&played) return;
       const sa=played?real[0]:'-', sb=played?real[1]:'-';
-      const picksHtml=D.participants.map(function(p){
-        const pk=p.ko&&p.ko[g.m];
-        if(!pk||pk[0]==null||pk[1]==null) return '';
-        const sc=played?scoreFor(real,pk):null;
-        const cls=sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
-        const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'var(--red)')+';color:#fff">+'+sc+'</span>':'';
-        return '<div class="pchip '+cls+'"><span class="nm">'+p.name+'</span><span class="sc">'+pk[0]+'-'+pk[1]+tag+'</span></div>';
-      }).join('');
+      /* Palpites ficam ocultos ate TODOS enviarem (ou ate a bola rolar) */
+      const kd=parseTs(KO_DATES[g.m]); const kicked=!!(kd&&Date.now()>=kd.getTime());
+      const allSent=D.participants.every(function(p){ var k=p.ko&&p.ko[g.m]; return k&&k[0]!=null&&k[1]!=null; });
+      const reveal=played||kicked||allSent;
+      let picksHtml;
+      if(reveal){
+        picksHtml=D.participants.map(function(p){
+          const pk=p.ko&&p.ko[g.m];
+          if(!pk||pk[0]==null||pk[1]==null) return '<div class="pchip g0"><span class="nm">'+p.name+'</span><span class="sc">sem palpite</span></div>';
+          const sc=played?scoreFor(real,pk):null;
+          const cls=sc===10?'g10':sc===5?'g5':sc===0?'g0':'';
+          const tag=sc!=null?'<span class="badge" style="background:'+(sc===10?'var(--green)':sc===5?'var(--yellow)':'var(--red)')+';color:#fff">+'+sc+'</span>':'';
+          return '<div class="pchip '+cls+'"><span class="nm">'+p.name+'</span><span class="sc">'+pk[0]+'-'+pk[1]+tag+'</span></div>';
+        }).join('');
+      } else {
+        const sent=D.participants.filter(function(p){ var k=p.ko&&p.ko[g.m]; return k&&k[0]!=null&&k[1]!=null; }).length;
+        picksHtml=D.participants.map(function(p){
+          const ok=!!(p.ko&&p.ko[g.m]&&p.ko[g.m][0]!=null&&p.ko[g.m][1]!=null);
+          return '<div class="pchip"><span class="nm">'+p.name+'</span><span class="sc">'+(ok?'&#9989; enviado':'&#8987; pendente')+'</span></div>';
+        }).join('')
+        +'<div class="empty" style="grid-column:1/-1">&#128274; Palpites ocultos ('+sent+'/'+D.participants.length+' enviados). Aparecem quando todos enviarem ou quando a bola rolar.</div>';
+      }
       var dts=fmtKO(KO_DATES[g.m]);
       cards+='<div class="game">'
         +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'+(dts?'<span>'+dts+'</span>':'')
@@ -267,7 +281,8 @@ const KO_TEAMS={
  81:['Estados Unidos','Bósnia e Herzegovina'],82:['Bélgica','Senegal'],83:['Colômbia','Gana'],84:['Espanha','Áustria'],
  85:['Suíça','Argélia'],86:['Argentina','Cabo Verde'],87:['Portugal','Croácia'],88:['Austrália','Egito'],
  89:['Paraguai','França'],90:['Canadá','Marrocos'],91:['Brasil','Noruega'],92:['México','Inglaterra'],
- 93:['Portugal','Espanha'],94:['Estados Unidos','Bélgica'],95:['Argentina','Egito'],96:['Suíça','Colômbia']
+ 93:['Portugal','Espanha'],94:['Estados Unidos','Bélgica'],95:['Argentina','Egito'],96:['Suíça','Colômbia'],
+ 97:['França','Marrocos'],98:['Espanha','Bélgica'],99:['Noruega','Inglaterra'],100:['Argentina','Suíça']
 };
 
 /* Data/hora (UTC) dos jogos do mata-mata. R32 definidos; demais fases entram pela API. */
@@ -277,7 +292,8 @@ const KO_DATES={
  81:'2026-07-02T00:00:00Z',82:'2026-07-01T20:00:00Z',83:'2026-07-02T23:00:00Z',84:'2026-07-02T19:00:00Z',
  85:'2026-07-03T03:00:00Z',86:'2026-07-03T22:00:00Z',87:'2026-07-04T01:30:00Z',88:'2026-07-03T18:00:00Z',
  89:'2026-07-04T21:00:00Z',90:'2026-07-04T17:00:00Z',91:'2026-07-05T20:00:00Z',92:'2026-07-06T00:00:00Z',
- 93:'2026-07-06T19:00:00Z',94:'2026-07-07T00:00:00Z',95:'2026-07-07T16:00:00Z',96:'2026-07-07T20:00:00Z'
+ 93:'2026-07-06T19:00:00Z',94:'2026-07-07T00:00:00Z',95:'2026-07-07T16:00:00Z',96:'2026-07-07T20:00:00Z',
+ 97:'2026-07-09T20:00:00Z',98:'2026-07-10T19:00:00Z',99:'2026-07-11T21:00:00Z',100:'2026-07-12T01:00:00Z'
 };
 function fmtKO(ts){ var d=parseTs(ts); if(!d) return ''; return 'BRT '+fmtTZ(d,'America/Sao_Paulo')+' &middot; UTC '+fmtTZ(d,'UTC'); }
 
@@ -292,8 +308,8 @@ function koRoundByDate(ms){
   if(s<='2026-06-27') return null;
   if(s<='2026-07-03') return 'r32';
   if(s<='2026-07-07') return 'r16';
-  if(s<='2026-07-11') return 'qf';
-  if(s<='2026-07-15') return 'sf';
+  if(s<='2026-07-12') return 'qf';
+  if(s<='2026-07-16') return 'sf';
   if(s<='2026-07-18') return 'tp';
   return 'fn';
 }
@@ -351,7 +367,9 @@ const KO_RESULTS={
  73:[0,1], 74:[1,1,'Paraguai'], 75:[1,1,'Marrocos'], 76:[2,1],
  77:[3,0], 78:[1,2], 79:[2,0], 80:[2,1],
  81:[2,0], 82:[2,2,'Bélgica'], 83:[1,0], 84:[3,0],
- 85:[2,0], 86:[3,2], 87:[2,1], 88:[1,1,'Egito']
+ 85:[2,0], 86:[3,2], 87:[2,1], 88:[1,1,'Egito'],
+ 89:[0,1], 90:[0,3], 91:[1,2], 92:[2,3],
+ 93:[0,1], 94:[1,4], 95:[3,2], 96:[0,0,'Suíça']
 };
 function koListByRound(){
   const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
