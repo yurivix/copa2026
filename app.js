@@ -163,7 +163,7 @@ function renderKOGames(stt){
   if(typeof resolveBracket!=='function') return '';
   const res=resolveBracket(); const koReal=koRealScores();
   const rname={}; KO.forEach(function(col){ col.ms.forEach(function(g){ rname[g.m]=col.r; }); });
-  let cards='';
+  let items=[];
   KO.forEach(function(col){
     col.ms.forEach(function(g){
       const t=res.T[g.m]; if(!t||!t.h||!t.a) return;
@@ -194,17 +194,28 @@ function renderKOGames(stt){
         +'<div class="empty" style="grid-column:1/-1">&#128274; Palpites ocultos ('+sent+'/'+D.participants.length+' enviados). Aparecem quando todos enviarem ou quando a bola rolar.</div>';
       }
       var dts=fmtKO(KO_DATES[g.m]);
-      cards+='<div class="game">'
+      const live=!!(kicked&&!played&&kd&&(Date.now()-kd.getTime())<3*3600*1000);
+      const stBadge=live?'<span class="badge blive">&#128308; AO VIVO</span>'
+        :'<span class="badge" style="background:var(--card2);color:var(--muted)">'+(played?'ENCERRADO':'A JOGAR')+'</span>';
+      const html='<div class="game'+(live?' live':'')+'">'
         +'<div class="ghead"><span class="gtag">'+rname[g.m]+' - Jogo '+g.m+'</span>'+(dts?'<span>'+dts+'</span>':'')
-        +'<span class="badge" style="background:var(--card2);color:var(--muted)">'+(played?'ENCERRADO':'A JOGAR')+'</span></div>'
+        +stBadge+'</div>'
         +'<div class="gmain"><div class="team a">'+flag(t.h)+ptName(t.h)+'</div>'
         +'<div class="score"><div class="scorebox '+(played?'':'empty')+'">'+sa+'</div>'
         +'<span class="vs">x</span><div class="scorebox '+(played?'':'empty')+'">'+sb+'</div></div>'
         +'<div class="team b">'+flag(t.a)+ptName(t.a)+'</div></div>'
         +'<div class="picks"><h4>Palpites da galera</h4>'
         +'<div class="pgrid">'+(picksHtml||'<div class="empty">Palpites do mata-mata entram quando enviados.</div>')+'</div></div></div>';
+      items.push({kick:kd?kd.getTime():0, played:played, live:live, html:html});
     });
   });
+  /* Ordem: ao vivo primeiro, depois a fase atual (jogos a jogar, do mais proximo), por fim encerrados (mais recente antes) */
+  items.sort(function(x,y){
+    if(x.live!==y.live) return x.live?-1:1;
+    if(x.played!==y.played) return x.played?1:-1;
+    return x.played ? (y.kick-x.kick) : (x.kick-y.kick);
+  });
+  const cards=items.map(function(it){return it.html;}).join('');
   return cards ? '<div class="secdiv">Mata-mata</div>'+cards : '';
 }
 function renderGames(){
@@ -293,7 +304,8 @@ const KO_DATES={
  85:'2026-07-03T03:00:00Z',86:'2026-07-03T22:00:00Z',87:'2026-07-04T01:30:00Z',88:'2026-07-03T18:00:00Z',
  89:'2026-07-04T21:00:00Z',90:'2026-07-04T17:00:00Z',91:'2026-07-05T20:00:00Z',92:'2026-07-06T00:00:00Z',
  93:'2026-07-06T19:00:00Z',94:'2026-07-07T00:00:00Z',95:'2026-07-07T16:00:00Z',96:'2026-07-07T20:00:00Z',
- 97:'2026-07-09T20:00:00Z',98:'2026-07-10T19:00:00Z',99:'2026-07-11T21:00:00Z',100:'2026-07-12T01:00:00Z'
+ 97:'2026-07-09T20:00:00Z',98:'2026-07-10T19:00:00Z',99:'2026-07-11T21:00:00Z',100:'2026-07-12T01:00:00Z',
+ 101:'2026-07-14T19:00:00Z',102:'2026-07-15T19:00:00Z',103:'2026-07-18T21:00:00Z',104:'2026-07-19T19:00:00Z'
 };
 function fmtKO(ts){ var d=parseTs(ts); if(!d) return ''; return 'BRT '+fmtTZ(d,'America/Sao_Paulo')+' &middot; UTC '+fmtTZ(d,'UTC'); }
 
