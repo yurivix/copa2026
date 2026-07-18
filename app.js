@@ -383,7 +383,10 @@ const KO_RESULTS={
  89:[0,1], 90:[0,3], 91:[1,2], 92:[2,3],
  93:[0,1], 94:[1,4], 95:[3,2], 96:[0,0,'Suíça'],
  /* Quartas: placar dos 90 min (99 e 100 foram para a prorrogacao) */
- 97:[2,0], 98:[2,1], 99:[1,1,'Inglaterra'], 100:[1,1,'Argentina']
+ 97:[2,0], 98:[2,1], 99:[1,1,'Inglaterra'], 100:[1,1,'Argentina'],
+ /* Semis: ambas decididas no tempo normal */
+ 101:[0,2], 102:[1,2]
+ /* 103 (3o lugar) e 104 (final): preencher apos os jogos */
 };
 function koListByRound(){
   const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
