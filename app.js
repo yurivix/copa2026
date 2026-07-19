@@ -35,8 +35,9 @@ function loadResults(){
 }
 function saveResults(){ localStorage.setItem(LS_RES, JSON.stringify(results)); }
 function loadDefs(){
-  try{ const d=JSON.parse(localStorage.getItem(LS_DEFS)); if(d) return d; }catch(e){}
-  return {champ:'', art:''};
+  /* Definicao oficial: Espanha campea, Mbappe artilheiro (10 gols) */
+  try{ const d=JSON.parse(localStorage.getItem(LS_DEFS)); if(d) return {champ:d.champ||'Espanha', art:d.art||'Mbappé'}; }catch(e){}
+  return {champ:'Espanha', art:'Mbappé'};
 }
 function saveDefs(){ localStorage.setItem(LS_DEFS, JSON.stringify(defs)); }
 function loadTimes(){ try{ const t=JSON.parse(localStorage.getItem(LS_TIMES)); if(t&&typeof t==='object') return t; }catch(e){} return {}; }
@@ -385,8 +386,9 @@ const KO_RESULTS={
  /* Quartas: placar dos 90 min (99 e 100 foram para a prorrogacao) */
  97:[2,0], 98:[2,1], 99:[1,1,'Inglaterra'], 100:[1,1,'Argentina'],
  /* Semis: ambas decididas no tempo normal */
- 101:[0,2], 102:[1,2]
- /* 103 (3o lugar) e 104 (final): preencher apos os jogos */
+ 101:[0,2], 102:[1,2],
+ /* 3o lugar e FINAL (0x0 nos 90 min; Espanha campea com gol na prorrogacao) */
+ 103:[4,6], 104:[0,0,'Espanha']
 };
 function koListByRound(){
   const by={r32:[],r16:[],qf:[],sf:[],tp:[],fn:[]};
